@@ -37,9 +37,7 @@ static struct {
 /*
  * sym_find_name - find symbol in table, return pointer to name or 0
  */
-char *
-sym_find_name (value)
-	int value;
+char * sym_find_name (int value)
 {
 	int i;
 

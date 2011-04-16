@@ -87,11 +87,11 @@ instr_exec ()
 }
 
 
+
 /*
  * instr_print - print (unassemble) an instruction
  */
-instr_print (addr)
-	u_int addr;
+instr_print (u_int addr)
 {
 	u_short		 pc	= addr;
 	u_char		 op	= mem_getb (pc);

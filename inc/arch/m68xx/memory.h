@@ -48,9 +48,9 @@ extern u_int  break_addr;	/* Last breakpoint address accessed */
 /*
  *  mem_getb - called to get a byte from an address
  */
-static int
-mem_getb (addr)
-	u_int addr;
+
+
+static char mem_getb (u_int addr)
 {
 	int offs = addr - ireg_start;
 
@@ -73,9 +73,9 @@ mem_getb (addr)
 	}
 }
 
-static int
-mem_getw (addr)
-	u_int addr;
+
+
+static int mem_getw (u_int addr)
 {
 	/* Make sure hi byte is accessed first */
 	u_char hi = mem_getb (addr);
@@ -86,10 +86,9 @@ mem_getw (addr)
 /*
  * mem_putb - called to write a byte to an address
  */
-static void
-mem_putb (addr, value)
-	u_int   addr;
-	u_char  value;
+
+
+static void mem_putb (u_int addr, u_char value)
 {
 	int offs = addr - ireg_start; /* Address of on-chip memory */
 
@@ -111,10 +110,9 @@ mem_putb (addr, value)
 	}
 }
 
-static void
-mem_putw (addr, value)
-	u_int addr;
-	u_int value;
+
+
+static void mem_putw (u_int addr, u_int value)
 {
 	mem_putb (addr, value >> 8);		/* hi byte */
 	mem_putb (addr + 1, value & 0xFF);	/* lo byte */

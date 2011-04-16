@@ -41,9 +41,9 @@ getprogname ()
 	return progname;
 }
 
-main (argc, argv)
-	int   argc;
-	char *argv[];
+
+
+main (int argc, char *argv[])
 {
 	int   errcode;
 	FILE *ifp;

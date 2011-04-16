@@ -80,9 +80,7 @@ unassemble (addr, ninstr)
 /*
  * list_breaks - list active breakpoints
  */
-static
-list_breaks (breaks)
-	char *breaks;
+static list_breaks (char *breaks)
 {
 	int i;
 	int n_breaks = 0;
@@ -104,10 +102,7 @@ list_breaks (breaks)
 /*
  *  set_break - set or clear breakpoint at the given address
  */
-static
-set_break (breaks, addr, count)
-	char  *breaks;
-	u_int  addr;
+static set_break (char *breaks, u_int addr, int count)
 {
 	char *p;
 
@@ -124,9 +119,7 @@ set_break (breaks, addr, count)
 /*
  * sig_int - called when user presses the Interrupt key (normally Ctrl-C)
  */
-void
-sig_int_handler (subcode)
-	int subcode;
+void sig_int_handler (int subcode)
 {
 	usr_int = 1;
 	signal (SIGINT, sig_int_handler);
@@ -135,10 +128,7 @@ sig_int_handler (subcode)
 /*
  * split - split 'buf' into strings 'cmd[0..MAXARGS-1]'
  */
-split (cmd, buf, argc)
-	char **cmd;
-	char  *buf;
-	int   *argc;
+split (	char **cmd, char  *buf, int   *argc)
 {
 	int i = 0;
 
@@ -187,8 +177,8 @@ commandinit ()
  */
 static (*ext_cmd)() = NULL;
 
-command_install (func)
-	int (*func) ();		/* func (int argc, char **argv) */
+command_install (int (*func)())
+/* func (int argc, char **argv) */
 {
 	ext_cmd = func;
 }
@@ -235,8 +225,7 @@ print_help ()
  *
  * Returns 0 when the quit command is given, else 1.
  */
-command (buf)
-	u_char *buf;
+command (u_char *buf)
 {
 	int		argc;
 	char		*argv[MAXARGS];	/* at least 3 */
@@ -588,8 +577,7 @@ command (buf)
 /*
  * commandloop - execute command loop
  */
-commandloop (ifp)
-	FILE *ifp;
+commandloop (FILE *ifp)
 {
 	char buf[MAXBUFSIZE];
 

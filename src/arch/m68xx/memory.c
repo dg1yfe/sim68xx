@@ -39,8 +39,7 @@ u_int  break_addr;		/* Last breakpoint address accessed */
 /*
  * mem_init - initialize memory area
  */
-u_char *
-mem_init ()
+u_char *mem_init ()
 {
 	u_int size = MEMSIZE; /* MEMSIZE also hard coded in command.c */
 
@@ -51,6 +50,8 @@ mem_init ()
 		}
 		ram_start = 0;
 		ram_end   = size - 1;
+		// set Memory to 0xFF (simulate unused ROM space)
+		memset (ram, 0xff, size);
 	} else {
 		printf ("ram already allocated\n");
 	}
