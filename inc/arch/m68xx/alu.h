@@ -1,36 +1,36 @@
-/* Automagically generated Wed Oct  9 07:41:03 GMT+0100 1996 - dont edit */
+/* Automagically generated Fr 15 Apr 2011 09:30:58 CEST - dont edit */
 #ifndef M68XX_ALU_H
 #define M68XX_ALU_H
 
 #if defined(__STDC__) || defined(__cplusplus)
-# define P_(s) s
+# define _P(s) s
 #else
-# define P_(s) ()
+# define _P(s) ()
 #endif
 
+/* Headers for ../../src/arch/m68xx/alu.c */
+extern int alu_addbyte _P((u_char val1, u_char val2, u_char carry));
+extern int alu_addword _P((u_int val1, u_int val2, u_char carry));
+extern int alu_andbyte _P((u_char val1, u_char val2));
+extern int alu_bittestbyte _P((u_char value));
+extern int alu_bittestword _P((u_int value));
+extern int alu_clrbyte _P((u_char value));
+extern int alu_combyte _P((u_char value));
+extern int alu_decbyte _P((u_char value));
+extern int alu_decword _P((u_int value));
+extern int alu_incbyte _P((u_char value));
+extern int alu_incword _P((u_int value));
+extern int alu_negbyte _P((u_char value));
+extern int alu_orbyte _P((u_char val1, u_char val2));
+extern int alu_xorbyte _P((u_char val1, u_char val2));
+extern int alu_shlbyte _P((u_int operand, u_char lsbit));
+extern int alu_shrbyte _P((u_int operand, u_char msbit));
+extern int alu_shlword _P((u_int operand, u_char lsbit));
+extern int alu_shrword _P((u_int operand, u_char msbit));
+extern int alu_subbyte _P((u_char val1, u_char val2, u_char carry));
+extern int alu_subword _P((u_int val1, u_int val2, u_char carry));
+extern int alu_testbyte _P((u_char operand));
+/* End of headers for ../../src/arch/m68xx/alu.c */
 
-/* ../../src/arch/m68xx/alu.c */
- int alu_addbyte P_((u_char val1, u_char val2, u_char carry));
-extern int alu_addword P_((u_int val1, u_int val2, u_char carry));
-extern int alu_andbyte P_((u_char val1, u_char val2));
-extern int alu_bittestbyte P_((u_char value));
-extern int alu_bittestword P_((u_int value));
-extern int alu_clrbyte P_((u_char value));
-extern int alu_combyte P_((u_char value));
-extern int alu_decbyte P_((u_char value));
-extern int alu_decword P_((u_int value));
-extern int alu_incbyte P_((u_char value));
-extern int alu_incword P_((u_int value));
-extern int alu_negbyte P_((u_char value));
-extern int alu_orbyte P_((u_char val1, u_char val2));
-extern int alu_xorbyte P_((u_char val1, u_char val2));
-extern int alu_shlbyte P_((u_int operand, u_char lsbit));
-extern int alu_shrbyte P_((u_int operand, u_char msbit));
-extern int alu_shlword P_((u_int operand, u_char lsbit));
-extern int alu_shrword P_((u_int operand, u_char msbit));
-extern int alu_subbyte P_((u_char val1, u_char val2, u_char carry));
-extern int alu_subword P_((u_int val1, u_int val2, u_char carry));
-extern int alu_testbyte P_((u_char operand));
-
-#undef P_
+#undef _P
 #endif /* M68XX_ALU_H */

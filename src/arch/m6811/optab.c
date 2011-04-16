@@ -296,7 +296,7 @@ struct opcode opcodetab[256] = {
 /*
  * Opcode table 2
  */
-static struct opcode opcodetab2[256] = {
+struct opcode opcodetab2[256] = {
 	{0x00, 2, 0, trap_6811,	0,	"-"},
 	{0x01, 2, 0, trap_6811,	0,	"-"},
 	{0x02, 2, 0, trap_6811,	0,	"-"},
@@ -568,7 +568,7 @@ static struct opcode opcodetab2[256] = {
 /*
  * Opcode table 3
  */
-static struct opcode opcodetab3[256] = {
+struct opcode opcodetab3[256] = {
 	{0x00, 2, 0, trap_6811,	0,	"-"},
 	{0x01, 2, 0, trap_6811,	0,	"-"},
 	{0x02, 2, 0, trap_6811,	0,	"-"},
@@ -830,7 +830,7 @@ static struct opcode opcodetab3[256] = {
 /*
  * Opcode table 4
  */
-static struct opcode opcodetab4[256] = {
+struct opcode opcodetab4[256] = {
 	{0x00, 2, 0, trap_6811,	0,	"-"},
 	{0x01, 2, 0, trap_6811,	0,	"-"},
 	{0x02, 2, 0, trap_6811,	0,	"-"},

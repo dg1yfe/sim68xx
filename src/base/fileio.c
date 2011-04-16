@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 
 #ifdef __STDC__
 #  include <stdarg.h>

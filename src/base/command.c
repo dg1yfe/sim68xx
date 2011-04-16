@@ -26,7 +26,7 @@
 
 #include <errno.h>
 
-#ifdef unix
+#if defined(unix)
 #include <malloc.h>
 #endif
 

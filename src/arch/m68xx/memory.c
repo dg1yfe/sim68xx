@@ -6,17 +6,11 @@
 /*
  *	Memory access
  */
-#ifdef unix
-#include <malloc.h>
-#endif
-
-#ifdef __MSDOS__
-#include <alloc.h>
-#endif
-
+#include <stdlib.h>
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "defs.h"		/* general definitions */
 #include "chip.h"		/* chip specific: NIREGS */

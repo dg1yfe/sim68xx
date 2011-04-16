@@ -1,15 +1,17 @@
-/* Automagically generated Wed Oct  9 07:33:48 GMT+0100 1996 - dont edit */
+/* Automagically generated Fr 15 Apr 2011 09:30:58 CEST - dont edit */
 #ifndef ERROR_H
 #define ERROR_H
 
 #if defined(__STDC__) || defined(__cplusplus)
-# define P_(s) s
+# define _P(s) s
 #else
-# define P_(s) ()
+# define _P(s) ()
 #endif
 
-extern int error P_((va_list format, ...));
-extern int warning P_((va_list format, ...));
+//extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
+extern FILE    *fopen(const char * __restrict, const char * __restrict);
+extern int error _P((va_list format, ...));
+extern int warning _P((va_list format, ...));
 
-#undef P_
+#undef _P
 #endif /* ERROR_H */

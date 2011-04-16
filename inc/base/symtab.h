@@ -1,17 +1,19 @@
-/* Automagically generated Wed Oct  9 07:33:56 GMT+0100 1996 - dont edit */
+/* Automagically generated Fr 15 Apr 2011 09:30:58 CEST - dont edit */
 #ifndef SYMTAB_H
 #define SYMTAB_H
 
 #if defined(__STDC__) || defined(__cplusplus)
-# define P_(s) s
+# define _P(s) s
 #else
-# define P_(s) ()
+# define _P(s) ()
 #endif
 
-extern char *sym_find_name P_((int value));
-extern int sym_find_value P_((char *name, int *value));
-extern int sym_add P_((int value, char *name));
-extern int sym_readfile P_((char *loadfile, char *symfile));
+//extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
+//extern char *strerror _P((int strerror_r (int, char *, size_t )));
+extern char *sym_find_name _P((int value));
+extern int sym_find_value _P((char *name, int *value));
+extern int sym_add _P((int value, char *name));
+extern int sym_readfile _P((char *loadfile, char *symfile));
 
-#undef P_
+#undef _P
 #endif /* SYMTAB_H */

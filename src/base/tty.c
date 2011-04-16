@@ -13,7 +13,7 @@
 #ifdef HAS_TERMIO
 
 #include <stdio.h>
-#include <termio.h>		/* linux/SCO/SunOS */
+#include <termios.h>		/* linux/SCO/SunOS */
 
 /*
  * noblock - set tty in echo, nostrip, non-blocking mode

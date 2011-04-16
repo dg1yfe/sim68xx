@@ -1,21 +1,24 @@
-/* Automagically generated Wed Oct  9 07:33:42 GMT+0100 1996 - dont edit */
+/* Automagically generated Fr 15 Apr 2011 09:30:58 CEST - dont edit */
 #ifndef COMMAND_H
 #define COMMAND_H
 
 #if defined(__STDC__) || defined(__cplusplus)
-# define P_(s) s
+# define _P(s) s
 #else
-# define P_(s) ()
+# define _P(s) ()
 #endif
 
-extern int unassemble P_((unsigned int addr, int ninstr));
-extern void sig_int_handler P_((int subcode));
-extern int split P_((char **cmd, char *buf, int *argc));
-extern int commandprompt P_((void));
-extern int commandinit P_((void));
-extern int print_help P_((void));
-extern int command P_((unsigned char *buf));
-extern int commandloop P_((FILE *ifp));
+extern int void _P(((int )));
+extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
+extern char *strerror _P((int strerror_r (int, char *, size_t )));
+extern int unassemble _P((unsigned int addr, int ninstr));
+extern void sig_int_handler _P((int subcode));
+extern int split _P((char **cmd, char *buf, int *argc));
+extern int commandprompt _P((void));
+extern int commandinit _P((void));
+extern int print_help _P((void));
+extern int command _P((unsigned char *buf));
+extern int commandloop _P((FILE *ifp));
 
-#undef P_
+#undef _P
 #endif /* COMMAND_H */

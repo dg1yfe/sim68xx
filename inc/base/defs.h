@@ -1,6 +1,8 @@
 #ifndef DEFS_H
 #define DEFS_H
 
+#include <stdint.h>
+
 #ifndef u_char
 #define u_char unsigned char
 #endif
@@ -64,7 +66,7 @@ extern void *memsetl (void *s, int c, unsigned long n); /* supplied by us */
 extern void *farmalloc (unsigned long nbytes);
 #endif
 
-#if defined(unix) || defined(__unix) || defined(__unix__)
+#if defined(unix) || defined(__unix) || defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #define HAS_TERMIO
 #endif
 

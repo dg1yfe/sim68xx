@@ -6,6 +6,7 @@
  * $Id: i2c_sim.c,v 1.2 1997/06/05 20:14:07 arne Exp $
  */
 
+#include <stdio.h>
 #include "stddef.h"
 #include "i2c_sim.h"
 
@@ -78,11 +79,10 @@ set_bit (data, bitno, value)
 /*
  * Add a byte to a bit stream buffer (host order)
  */
-static void
-add_byte (data, bits, value)
-	u_char *data;		/* Buffer to add byte to */
-	u_int  *bits;		/* Number of bits in data */
-	u_char  value;		/* Byte value to add */
+static void add_byte (u_char *data, u_char *bits, u_char  value)
+//	u_char *data;		/* Buffer to add byte to */
+//	u_int  *bits;		/* Number of bits in data */
+//	u_char  value;		/* Byte value to add */
 {
 	u_char i;
 
@@ -95,9 +95,7 @@ add_byte (data, bits, value)
 /*
  * Add ack to a bit stream buffer
  */
-add_ack (data, bits)
-	u_char *data;
-	u_int  *bits;
+add_ack (u_char *data, u_char *bits)
 {
 	/* Ack must be given before clock 0->1 */
 
@@ -196,8 +194,7 @@ x9241_read_write (cmd_data, cmd_bits, resp_data, resp_bits)
 					inst, pot, x9241[inst].pot[pot].wiper);
 			}
 			add_ack (resp_data, resp_bits);
-			add_byte (resp_data, resp_bits,
-				  x9241[inst].pot[pot].wiper);
+			add_byte (resp_data, resp_bits, x9241[inst].pot[pot].wiper);
 			break;
 		case WRITE_WIPER:
 			/* Next byte to receive is our value */

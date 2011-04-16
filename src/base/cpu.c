@@ -5,6 +5,7 @@
 /*
  *	General purpose CPU info
  */
+#include <stdio.h>
 #include "defs.h"
 #include "cpu.h"
 #include "reg.h"

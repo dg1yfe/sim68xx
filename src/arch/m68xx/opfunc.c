@@ -6,7 +6,7 @@
 /* opfunc.c - functions that execute Motorola 68xx instructions */
 /*====================================================================*/
 
-
+#include <stdio.h>
 #include "defs.h"
 
 #ifdef USE_PROTOTYPES
@@ -876,9 +876,6 @@ bclr_bit (addr, m) {mem_putb (addr, mem_getb (addr) & ~(1 << m));}
 
 getirq ()
 {
-
-#include <stdio.h>
-
     while (1)
     {
         printf ("\nIRQ line status (0,1): ");
