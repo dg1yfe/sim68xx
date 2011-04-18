@@ -14,7 +14,7 @@ DEFINES	= -DUSE_PROTOTYPES
 CPPFLAGS= $(DEFINES) $(INCLUDES)
 
 # Executable programs
-EXES	= sim6301 sim6805 sim6811 simnccpu simncpan
+EXES	= sim6301 sim6303 sim6805 sim6811 simnccpu simncpan
 INSTDIR	= /home/local/bin
 
 # Non-chip specific object files
@@ -42,6 +42,23 @@ H6301_OBJS=\
 	$(H6301)/ireg.o\
 	$(H6301)/sci.o\
 	$(H6301)/timer.o
+
+# Chip specific object file list
+H6303=../arch/h6303
+H6303_OBJS=\
+	$(H6303)/callstac.o\
+	$(H6303)/command.o\
+	$(H6303)/cpu.o\
+	$(H6303)/io.o\
+	$(H6303)/fileio.o\
+	$(H6303)/memory.o\
+	$(H6303)/reg.o\
+	$(H6303)/opfunc.o\
+	$(H6303)/optab.o\
+	$(H6303)/instr.o\
+	$(H6303)/ireg.o\
+	$(H6303)/sci.o\
+	$(H6303)/timer.o
 
 M6805= ../arch/m6805
 M6805_OBJS=\
@@ -101,6 +118,8 @@ depend:
 #
 sim6301: noboard.o $(BASE_OBJS) $(H6301_OBJS)
 	$(LINK.o) $(LDFLAGS) -o $@ $^
+sim6303: noboard.o $(BASE_OBJS) $(H6303_OBJS)
+	$(LINK.o) $(LDFLAGS) -o $@ $^
 sim6805: noboard.o $(BASE_OBJS) $(M6805_OBJS)
 	$(LINK.o) $(LDFLAGS) -o $@ $^
 sim6811: noboard.o $(BASE_OBJS) $(M6811_OBJS)
@@ -121,6 +140,7 @@ sim_nc24re: nc24r.o $(BASE_OBJS) $(M6811_OBJS)
 # These are treated as OK library files
 $(OBJS_BASE):
 $(OBJS_6301_SIM):
+$(OBJS_6303_SIM):
 $(OBJS_6805_SIM):
 $(OBJS_6811_SIM):
 
