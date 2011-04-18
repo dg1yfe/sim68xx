@@ -8,8 +8,6 @@
 # define _P(s) ()
 #endif
 
-//extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
-//extern char *strerror _P((int strerror_r (int, char *, size_t )));
 extern char *sym_find_name _P((int value));
 extern int sym_find_value _P((char *name, int *value));
 extern int sym_add _P((int value, char *name));

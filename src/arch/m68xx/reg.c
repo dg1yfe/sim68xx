@@ -101,10 +101,7 @@ reg_printall ()
  * are available for all processors.
  * If you change it, don't forget to update the help text.
  */
-static
-reg_set (regname, regval)
-	u_int regname;
-	u_int regval;
+static reg_set (u_int regname, u_int regval)
 {
 	switch (regname)
 	{

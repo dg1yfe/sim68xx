@@ -5,6 +5,7 @@
 /*
  *	Timer functions
  */
+#include <stdio.h>
 #include "defs.h"
 #include "chip.h"           /* chip address definitions */
 

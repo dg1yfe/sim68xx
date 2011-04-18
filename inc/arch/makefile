@@ -1,13 +1,11 @@
-# Makefile to automatically generate header files containing function prototypes.
-# This only apply to simple header files, be careful before typing 'make clean'.
+# This makefile used to automatically generate header files
+# It doesn't do this anymore
+# TODO : Cleanup of includes / headers / makefiles
 SRCDIR	= ../../src/arch
 HFILES	=\
 	m68xx/alu.h\
 	m68xx/io.h\
 	m68xx/opfunc.h\
-
-# Program to extract function declarations from source files
-# MKPROTOS= mkptypes -e
 
 
 default: .include

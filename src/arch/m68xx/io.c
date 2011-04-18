@@ -6,6 +6,7 @@
  * I/O (and chip specific) commands
  */
 #include <stdio.h>
+#include <string.h>
 #include "defs.h"
 
 #ifdef USE_PROTOTYPES

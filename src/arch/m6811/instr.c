@@ -58,8 +58,7 @@ static int (*instr_hook) () = NULL;
 /*
  * instr_hook_install - install a hook in the instruction execution
  */
-instr_hook_install (func)
-	int (*func) ();
+instr_hook_install (int (*func ()) )
 {
 	instr_hook = func;
 }

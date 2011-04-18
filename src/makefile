@@ -10,7 +10,7 @@ include ./default.mk
 SUBDIRS	= arch base boards
 
 default: all
-all install clean realclean depend:
+all h6303 install clean realclean depend:
 	for i in $(SUBDIRS); do cd $$i; $(MAKE) CC=$(CC) 'CFLAGS=$(CFLAGS)' $@; cd ..; done
 
 # Automatic generation of header files

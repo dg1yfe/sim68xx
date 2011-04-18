@@ -1,13 +1,36 @@
-/* <<<                                  */
-/* Copyright (c) 1994-1996 Arne Riiber. */
-/* All rights reserved.                 */
-/* >>>                                  */
-/* main.c - simulator loop */
+ /*
+  *
+  * Sim68xx - 68xx/63xx CPU Simulator
+  *
+  * main.c - simulator loop
+  *
+     Copyright (C) 2011 Felix Erckenbrecht
+     <dg1yfe at gmx.de>
 
+     Copyright (C) 1994 - 2004  Arne Riiber
+     <riiber at systek.no>
+
+     This program is free software; you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation; either version 2 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  *
+*/
 /*
- * $Id: main.c,v 1.2 1994/08/23 22:19:54 arne Exp arne $
+ * 04/2011 Reworked the code to compile under OS-X 10.6
+ * Included GPL v2 license message into source code the program
+ * is released under the terms of the GPL.
+ * Added code to GIT version control
  *
- * $Log: main.c,v $
  * Revision 1.2  1994/08/23  22:19:54  arne
  * Added reading commands of default .simrc init file.
  * Made reading commands from redirected input possible.

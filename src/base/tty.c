@@ -9,7 +9,7 @@
 
 
 #include "defs.h"
-
+#include <string.h>
 #ifdef HAS_TERMIO
 
 #include <stdio.h>
