@@ -50,7 +50,7 @@ extern u_int  break_addr;	/* Last breakpoint address accessed */
  */
 
 
-static char mem_getb (u_int addr)
+static u_char mem_getb (u_int addr)
 {
 	int offs = addr - ireg_start;
 
@@ -75,7 +75,7 @@ static char mem_getb (u_int addr)
 
 
 
-static int mem_getw (u_int addr)
+static u_int mem_getw (u_int addr)
 {
 	/* Make sure hi byte is accessed first */
 	u_char hi = mem_getb (addr);
