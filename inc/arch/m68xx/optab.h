@@ -17,6 +17,18 @@ struct opcode {
 #ifdef M6811
 	struct opcode	*op_nexttab;	/* Pointer to next opcode table	*/
 #endif
+#ifdef H6303
+	u_char		op_addrmode;	/* Addressing mode
+	 	 	 	 	 	 	 	 	0 = Immediate
+	 	 	 	 	 	 	 	 	1 = Direct Addressing (Zero Page)
+	 	 	 	 	 	 	 	 	2 = Extended Addressing
+	 	 	 	 	 	 	 	 	3 = Indexed Addressing
+	 	 	 	 	 	 	 	 	4 = Implied Addressing
+	 	 	 	 	 	 	 	 	5 = Relative Addressing
+	 	 	 	 	 	 	 	 	6 = Immediate, Direct
+	 	 	 	 	 	 	 	 	7 = Immediate, Indexed
+	 	 	 	 	 	 	 	 	*/
+#endif
 };
 
 #if defined(__STDC__) || defined(__cplusplus)

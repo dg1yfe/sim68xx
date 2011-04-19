@@ -106,26 +106,77 @@ instr_print (u_int addr)
 
 	printf ("%04x\t", pc);
 
-	if (opptr->op_n_operands == 0)
+	switch(opptr->op_addrmode)
 	{
-		printf ("%02x\t\t",  mem_getb (pc));
-		printf (opptr->op_mnemonic, mem_getb (pc + 1));
+		case 0:	// Immediate
+		{
+			printf ("%02x %02x\t\t",  mem_getb (pc), mem_getb (pc+1));
+//			printf ("%02x\t\t",  mem_getb (pc));
+			printf (opptr->op_mnemonic, mem_getb (pc + 1));
+			break;
+		}
+		case 1: // Direct
+		{
+			printf ("%02x %02x\t\t",  mem_getb (pc), mem_getb (pc+1));
+			printf (opptr->op_mnemonic, mem_getb (pc + 1));
+			if (symname = sym_find_name (mem_getb (pc + 1)))
+				printf ("\t%s", symname);
+			break;
+		}
+		case 2: // Extended
+		{
+			printf ("%02x %02x %02x\t", mem_getb (pc),
+					mem_getb (pc + 1), mem_getb (pc + 2));
+			printf (opptr->op_mnemonic, mem_getw (pc + 1));
+			if (symname = sym_find_name (mem_getw (pc + 1)))
+				printf ("\t%s", symname);
+			break;
+		}
+		case 3: // Indexed
+		{
+			printf ("%02x %02x\t\t",  mem_getb (pc), mem_getb (pc+1));
+			printf (opptr->op_mnemonic, mem_getb (pc + 1));
+			if (symname = sym_find_name (reg_getix() + mem_getb (pc + 1)))
+				printf ("\t%s", symname);
+			break;
+		}
+		case 4: // Implied
+		{
+			printf ("%02x\t\t",  mem_getb (pc));
+			printf (opptr->op_mnemonic, mem_getb (pc + 1));
+			break;
+		}
+		case 5: // Relative
+		{
+			signed char offset = (signed char) mem_getb (pc + 1);
+
+			printf ("%02x %02x\t\t",  mem_getb (pc), mem_getb (pc+1));
+			printf (opptr->op_mnemonic, mem_getb (pc + 1));
+			if (symname = sym_find_name (pc + offset))
+				printf ("\t%s", symname);
+			break;
+		}
+		case 6: // Immediate Direct
+		{
+			printf ("%02x %02x %02x\t", mem_getb (pc),
+					mem_getb (pc + 1), mem_getb (pc + 2));
+			printf (opptr->op_mnemonic, mem_getb (pc + 1), mem_getb(pc + 2));
+			if (symname = sym_find_name (mem_getb (pc + 2)))
+				printf ("\t%s", symname);
+			break;
+		}
+		case 7: // Immediate Indexed
+		{
+			printf ("%02x %02x %02x\t", mem_getb (pc),
+					mem_getb (pc + 1), mem_getb (pc + 2));
+			printf (opptr->op_mnemonic, mem_getb (pc + 1), mem_getb(pc + 2));
+			if (symname = sym_find_name (reg_getix() + mem_getb (pc + 2)))
+				printf ("\t%s", symname);
+			break;
+		}
+
 	}
-	else if (opptr->op_n_operands == 1)
-	{
-		printf ("%02x %02x\t\t",  mem_getb (pc), mem_getb (pc+1));
-		printf (opptr->op_mnemonic, mem_getb (pc + 1));
-		if (symname = sym_find_name (mem_getb (pc + 1)))
-			printf ("\t%s", symname);
-	}
-	else
-	{
-		printf ("%02x %02x %02x\t", mem_getb (pc),
-			mem_getb (pc + 1), mem_getb (pc + 2));
-		printf (opptr->op_mnemonic, mem_getw (pc + 1));
-		if (symname = sym_find_name (mem_getw (pc + 1)))
-			printf ("\t%s", symname);
-	}
+
 	/* printf ("\t[%d]\n", cpu_getncycles ()); */
 	putchar ('\n');
 	return opptr->op_n_operands + 1;
