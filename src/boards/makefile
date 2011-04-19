@@ -14,7 +14,8 @@ DEFINES	= -DUSE_PROTOTYPES
 CPPFLAGS= $(DEFINES) $(INCLUDES)
 
 # Executable programs
-EXES	= sim6301 sim6303 sim6805 sim6811 simnccpu simncpan
+#EXES	= sim6301 sim6303 sim6805 sim6811 simnccpu simncpan
+EXES	= sim6303
 INSTDIR	= /home/local/bin
 
 # Non-chip specific object files

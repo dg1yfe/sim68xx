@@ -14,6 +14,7 @@
 #include "reg.h"
 #include "sci.h"
 #include "timer.h"
+#include "symtab.h"
 
 #ifdef USE_PROTOTYPES
 #include "instr.h"

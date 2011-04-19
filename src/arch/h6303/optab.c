@@ -2,10 +2,10 @@
 /* Copyright (c) 1994-1996 Arne Riiber. */
 /* All rights reserved.                 */
 /* >>>                                  */
-/* 6301map.c - opcode map 6301 cpu core */
+/* 6303map.c - opcode map 6303 cpu core */
 
-#ifndef H6301
-#define H6301
+#ifndef H6303
+#define H6303
 #endif
 
 #include "optab.h"		/* struct opcodetab */

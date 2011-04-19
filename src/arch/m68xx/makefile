@@ -7,7 +7,6 @@ CPPFLAGS= $(INCLUDES) $(DEFINES)
 RM	= rm -f
 
 # Files in this directory is compiled to object files in other directories
-hd6303:
 default:
 all:
 clean:

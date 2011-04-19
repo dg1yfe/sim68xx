@@ -113,13 +113,13 @@ load_line_s19 (buf, offset)
 			sum = ~sum & 0xFF;
 			sscanf (&buf[8 + (i - 2) * 2], "%02x", &csum);
 			if (csum != sum) {
-				error ("Checksum: computed %02x, read: %02x\n", sum, csum);
+				error ((void *)"Checksum: computed %02x, read: %02x\n", sum, csum);
 				return -1;
 			}
 		} else if (c2 == '9' || c2 == '0') {
 			; /* OK - ignore */
 		} else {
-			error ("Invalid S19 file\n");
+			error ((void *)"Invalid S19 file\n");
 			return -1;
 		}
 	}

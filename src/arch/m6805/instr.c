@@ -15,6 +15,7 @@
 #include "sci.h"
 #include "spi.h"
 #include "timer.h"
+#include "symtab.h"
 
 #ifdef USE_PROTOTYPES
 #include "instr.h"

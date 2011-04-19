@@ -33,7 +33,7 @@
 	fputs ("Error: ", stderr);
 
 	VA_START (ap, format);
-	vfprintf (stderr, format, ap);
+	vfprintf (stderr, (char *) format, ap);
 	va_end (ap);
 
 	nerrors++;
@@ -55,7 +55,7 @@
 	fputs ("Warning: ", stderr);
 
 	VA_START (ap, format);
-	vfprintf (stderr, format, ap);
+	vfprintf (stderr, (char *) format, ap);
 	va_end (ap);
 }
 

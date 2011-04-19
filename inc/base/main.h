@@ -8,7 +8,7 @@
 # define _P(s) ()
 #endif
 
-extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
+//extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
 extern char *strerror _P((int strerror_r (int, char *, size_t )));
 extern char *getprogname _P((void));
 extern int main _P((int argc, char *argv[]));

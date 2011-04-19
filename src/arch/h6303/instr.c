@@ -14,6 +14,7 @@
 #include "reg.h"
 #include "sci.h"
 #include "timer.h"
+#include "symtab.h"
 
 #ifdef USE_PROTOTYPES
 #include "instr.h"
@@ -49,7 +50,7 @@ instr_exec ()
 		/*
 		 * Check for interrupts in priority order
 		 */
-		if ((ireg_getb (TCSR) & OCF) && (ireg_getb (TCSR) & EOCI)) {
+		if ((ireg_getb (TCSR) & OCF1) && (ireg_getb (TCSR) & EOCI1)) {
 			int_addr (OCFVECTOR);
 			interrupted = 1;
 		} else if (serial_int ()) {

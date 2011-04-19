@@ -4,7 +4,7 @@
 /*
  * 6303 memory map
  */
-#define NIREGS  0x15		/* Number of internal registers */
+#define NIREGS  0x21		/* Number of internal registers */
 
 /*
  * Internal registers
@@ -22,6 +22,7 @@
  * Timer registers
  */
 #define TCSR	0x08	/* Timer Control/Status Register	*/
+#define TCSR1	0x08	/* Timer Control/Status Register	*/
 #define FRC		0x09	/* Free-Running Counter (16 bits)	*/
 #define FRCH	0x09
 #define FRCL	0x0A

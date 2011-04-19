@@ -50,9 +50,10 @@ int (*ireg_getb_func[NIREGS]) P_((u_int offs)) = {
 	0,          trcsr_getb, rdr_getb,   0,
 	0,			0,			 0,			  0,
 	0,			0,			 0,			  0,
-	0,			t2cnt_getb,	 0,			  0
+	0,			t2cnt_getb,	 0,			  0,
+/* 0x20 */
+	0
 };
-
 
 /*
  *  Pointers to functions to be called for writing internal registers
@@ -67,7 +68,9 @@ int (*ireg_putb_func[NIREGS]) P_((u_int offs, u_char val)) = {
 	0,          trcsr_putb,	 0,           tdr_putb,
 	0,			0,			 0,			  0,
 	0,			0,			 0,			  0,
-	0,			t2cnt_putb,	 0,			  0
+	0,			t2cnt_putb,	 0,			  0,
+/* 0x20 */
+	0
 };
 
 #undef P_

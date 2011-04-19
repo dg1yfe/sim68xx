@@ -44,13 +44,11 @@ char * sym_find_name (int value)
 	for (i = 0; i < symtab.nsymbols; i++)
 		if (symtab.syms[i].value == value)
 			return symtab.syms[i].name;
-	return 0;
+	return NULL;
 }
 
 
-sym_find_value (name, value)
-	char *name;
-	int  *value;
+int sym_find_value (char *name, int *value)
 {
 	int i;
 
@@ -69,9 +67,7 @@ sym_find_value (name, value)
 /*
  * sym_add - find symbol in table, return >= 0 if OK or <0 if error
  */
-sym_add (value, name)
-	int   value;
-	char *name;
+int sym_add (int   value, char *name)
 {
 	if (symtab.nsymbols < MAXSYMS)
 	{
@@ -88,8 +84,7 @@ sym_add (value, name)
 }
 
 
-static
-read_aslink_file (ifp)
+static int read_aslink_file (ifp)
 	FILE *ifp;
 {
 	char buf[MAXBUFSIZE];
@@ -111,8 +106,7 @@ read_aslink_file (ifp)
 	return ferror (ifp);
 }
 
-static
-read_asm68xx_file (ifp)
+static int read_asm68xx_file (ifp)
 	FILE *ifp;
 {
 	char buf[MAXBUFSIZE];
@@ -150,7 +144,7 @@ static struct sym_file_ass {
 /*
  * sym_readfile - read symbol table from file
  */
-sym_readfile (loadfile, symfile)
+int sym_readfile (loadfile, symfile)
 	char *loadfile;		/* File to be used for base name */
 	char *symfile;		/* NULL => try different extensions */
 {

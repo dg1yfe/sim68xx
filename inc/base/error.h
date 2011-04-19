@@ -8,7 +8,6 @@
 # define _P(s) ()
 #endif
 
-//extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
 extern FILE    *fopen(const char * __restrict, const char * __restrict);
 extern int error _P((va_list format, ...));
 extern int warning _P((va_list format, ...));

@@ -20,6 +20,7 @@
 #include "reg.h"
 #include "alu.c"	/* To get inline functions */
 
+#include "symtab.h"
 /*
  *  CCR flag shorthands
  */
@@ -402,7 +403,7 @@ tpa_inh ()	{reg_setacca (reg_getccr ());}
 trap ()
 {
 	u_int  routine = callstack_peek_addr ();
-	char  *p       = (char *) sym_find_name (routine);
+	char  * p = sym_find_name (routine);
 
 	warning ("trap: pc:%04x\nSubroutine: %04x %s\n",
 		 reg_getpc (), routine, p ? p : "");

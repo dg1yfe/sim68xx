@@ -9,7 +9,7 @@
 #endif
 
 
-/* ../../src/68xx/h6301/sci.c */
+/* ../../src/68xx/h6303/sci.c */
 
 extern int	rxinterrupts;	/* Number of outstanding rx interrupts */
 extern int	txinterrupts;	/* Number of outstanding tx interrupts */

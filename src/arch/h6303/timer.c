@@ -26,7 +26,7 @@ int tcsr1_getb (u_int offs)
 	if ((tcsr1 = ireg_getb (TCSR1)) & OCF1)
 		tcsr_is_read = 1;
 
-	return tcsr2;
+	return tcsr1;
 }
 
 
@@ -47,7 +47,7 @@ int tcsr2_getb (u_int offs)
 
 
 
-void tcsr1_putb (u_int offs, u_char value)
+int tcsr1_putb (u_int offs, u_char value)
 {
 	u_char read_only = (ICF|OCF1|TOF);
 
@@ -56,7 +56,7 @@ void tcsr1_putb (u_int offs, u_char value)
 
 
 
-void tcsr2_putb (u_int offs, u_char value)
+int tcsr2_putb (u_int offs, u_char value)
 {
 	u_char read_only = (ICF|OCF2|OCF1);
 
@@ -69,7 +69,7 @@ void tcsr2_putb (u_int offs, u_char value)
  * 6303 Output Compare Flag 1 is cleared if TSR1 or TSR2 is read and
  * Output Compare Register 1 hi or low byte is written
  */
-void ocr1_putb (u_int offs, u_char value)
+int ocr1_putb (u_int offs, u_char value)
 {
 	ireg_putb (offs, value);
 
@@ -89,7 +89,7 @@ void ocr1_putb (u_int offs, u_char value)
  * 6303 Output Compare Flag 2 is cleared if TSR2 is read and
  * Output Compare Register 2 hi or low byte is written
  */
-void ocr2_putb (u_int offs, u_char value)
+int ocr2_putb (u_int offs, u_char value)
 {
 	ireg_putb (offs, value);
 
@@ -132,20 +132,19 @@ int t2cnt_get_prescale_bits(void)
 }
 
 
-void t2cnt_putb (u_int offs, u_char value)
+int t2cnt_putb (u_int offs, u_char value)
 {
 	int ps_bits;
 
 	ireg_putb (T2CNT, value);
 
-	ps_bits = t2cnt_get_prescale_bits();
-	timer2_int = value << ps_bits;
+	return 0;
 }
 
 
-int t2cnt_getb (u_int offs, u_char value)
+int t2cnt_getb (u_int offs)
 {
-	ireg_getb (T2CNT);
+	return ireg_getb (T2CNT);
 }
 
 /*
@@ -188,7 +187,7 @@ int timer_inc (u_int ncycles)
 	}
 
 	// check if Timer 2 is enabled
-	t2_enabled = ireg_getw(TCSR3) & T2E;
+	t2_enabled = ireg_getw(TCSR3) & TE2;
 	if(t2_enabled)
 	{
 		int frc_diff;
@@ -206,12 +205,12 @@ int timer_inc (u_int ncycles)
 		tconr = ireg_getb(TCONR);
 
 		if (t2cnt_new >= tconr) {
-			timer2_new -= tconr;
+			t2cnt_new -= tconr;
 			ireg_putb (TCSR3, ireg_getb (TCSR3) | CMF);
 			tcsr2_is_read = 0;
 		}
 
-		ireg_putb(TCNT2, t2cnt_new & 0xff);
+		ireg_putb(T2CNT, t2cnt_new & 0xff);
 	}
 
 	ireg_putw (FRC, frc_new);
