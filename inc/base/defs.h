@@ -54,18 +54,6 @@
 #define NULL 0
 #endif
 
-#ifdef __MSDOS__
-/*
- * Want to allocate and set memory arrays of size 65536, malloc() can't do it.
- * Turboc doesn't include needed prototype for farmalloc() if __STDC__ 
- * is defined (-A option), so we include it here.
- */
-#define malloc farmalloc
-#define memset memsetl
-extern void *memsetl (void *s, int c, unsigned long n); /* supplied by us */
-extern void *farmalloc (unsigned long nbytes);
-#endif
-
 #if defined(unix) || defined(__unix) || defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #define HAS_TERMIO
 #endif

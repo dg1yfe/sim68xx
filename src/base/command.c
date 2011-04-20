@@ -25,15 +25,6 @@
  */
 
 #include <errno.h>
-
-#if defined(unix)
-#include <malloc.h>
-#endif
-
-#ifdef __MSDOS__
-#include <alloc.h>
-#endif
-
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
@@ -389,15 +380,6 @@ int command (u_char *buf)
 			}
 			pc_old = reg_getpc ();
 			instr_exec ();
-
-#ifdef __MSDOS__
-			/*
-			 * DOS Turbo C doesn't interrupt unless char I/O
-			 * xxx: Test this for W32
-			 */
-			if (kbhit ())
-				;
-#endif
 		}
 
 		cpu_stop ();

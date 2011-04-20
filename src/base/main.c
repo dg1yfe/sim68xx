@@ -51,12 +51,7 @@
 
 #include "fileio.h"
 
-#ifdef __MSDOS__
-  char *inifile = "sim.rc";
-#else
-  char *inifile = ".simrc";
-#endif
-
+char *inifile = ".simrc";
 char *progname;
 
 extern u_char *mem_init();
