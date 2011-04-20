@@ -516,7 +516,12 @@ int command (u_char *buf)
 				}
 				instr_exec ();
 			}
-			while (reg_getsp () < ret_sp);
+			while ((reg_getsp () < ret_sp) && (usr_int == 0));
+			if (usr_int)
+			{
+				printf ("Interrupted!\n");
+				usr_int = 0;
+			}
 			cpu_stop ();
 			tty_restore (0, (char *) tty);
 
