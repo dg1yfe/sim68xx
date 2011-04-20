@@ -8,9 +8,9 @@
 #endif
 
 
-extern int reset P_((void));
+extern void reset P_((void));
 extern int instr_exec P_((void));
-extern int instr_print P_((u_int addr));
+extern u_int instr_print P_((u_int addr));
 
 #undef P_
 #endif /* INSTR_H */

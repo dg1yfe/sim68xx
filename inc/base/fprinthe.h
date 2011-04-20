@@ -8,12 +8,7 @@
 # define _P(s) ()
 #endif
 
-extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
-extern int void _P(((int )));
-extern int getrlimit _P((int getrusage (int, struct rusage *), int setrlimit (int, const struct rlimit *)__asm (0 0 )));
-extern pid_t wait _P((pid_t waitpid (pid_t, int *, int )__asm (0 0 )));
-extern void abort _P((int atexit (void (*)(void ))));
-extern int fprinthex _P((FILE *fp, unsigned char *buf, int len));
+extern void fprinthex _P((FILE *fp, unsigned char *buf, int len));
 
 #undef _P
 #endif /* FPRINTHE_H */

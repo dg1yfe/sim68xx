@@ -7,7 +7,9 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "defs.h"
+#include "tty.h"
 
 #ifdef USE_PROTOTYPES
 #  include "io.h"
@@ -34,22 +36,22 @@ static enum io_out_modes {
 /*
  * out_in - determine output mode from input string
  */
-out_in (buf, nbytes)
-	u_char *buf;
-	int     nbytes;
+int out_in (u_char *buf, int nbytes)
 {
-	if (strncmp (buf, "hex", strlen ("hex")) == 0)
+	if (strncmp ((char *) buf, "hex", strlen ("hex")) == 0)
 		io_mode = HEX;
-	else if (strncmp (buf, "ascii", strlen ("ascii")) == 0)
+	else if (strncmp ((char *) buf, "ascii", strlen ("ascii")) == 0)
 		io_mode = ASCII;
-	else if (strncmp (buf, "\\ascii", strlen ("\\ascii")) == 0)
+	else if (strncmp ((char *) buf, "\\ascii", strlen ("\\ascii")) == 0)
 		io_mode = BACKSLASH_ASCII;
+
+	return 0;
 }
 
 /*
  * out_print - print current output mode
  */
-out_print (buf, nbytes)
+int out_print (buf, nbytes)
 {
 	printf ("io output mode: ");
 	switch (io_mode)
@@ -59,6 +61,8 @@ out_print (buf, nbytes)
 	case BACKSLASH_ASCII: printf ("\\ascii"); break;
 	}
 	putchar ('\n');
+
+	return 0;
 }
 
 
@@ -85,7 +89,7 @@ struct iodev iotab[] = {
 	{spi_in, spi_print, "spi"},
 #endif
 	{out_in, out_print, "out"},	/* Pseudo device */
-	NULL
+	{NULL, NULL}
 };
 
 static
@@ -107,8 +111,7 @@ char *helptext[] = {
 
 static struct iodev *curr_dev = iotab;	/* Current input device */
 
-static
-help ()
+static int help ()
 {
 	char **p;
 	for (p = helptext; *p; p++)
@@ -119,7 +122,7 @@ help ()
 /*
  * io_poll - poll standard input for a character, use as input into device
  */
-io_poll ()
+void io_poll ()
 {
 	int  c;
 	char ch;
@@ -139,8 +142,7 @@ io_poll ()
  *
  * This routine is called as default by device drivers to output a byte.
  */
-io_putb (value)
-	u_char value;
+void io_putb (u_char value)
 {
 	switch (io_mode)
 	{
@@ -163,7 +165,7 @@ io_putb (value)
 /*
  * io_cmd - process 'argv', return 1 if valid command executed
  */
-io_cmd (argc, argv)
+int io_cmd (argc, argv)
 	int   argc;
 	char *argv[];
 {
@@ -204,13 +206,13 @@ io_cmd (argc, argv)
 			u_char buf[MAXBUFSIZE];
 			u_int  number;
 
-			if (sscanf (argv[i], "%x", &number) == 1)
+			if (sscanf (argv[i], "%x", (int *) &number) == 1)
 			{
 				buf[0] = number & 0xff;
 				(*device->input) (buf, 1);
 			}
 			else if (sscanf (argv[i], "\"%s\"", buf) == 1)
-				(*device->input) (buf, strlen (buf) - 1);
+				(*device->input) (buf, strlen ((char *)buf) - 1);
 		}
 		/* (*device->print) (); // this confuses expect */
 		return 1;	/* Valid command */

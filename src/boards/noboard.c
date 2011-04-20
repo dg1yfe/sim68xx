@@ -5,7 +5,7 @@
 /*
  * board_install - install board specific hooks
  */
-board_install ()
+int board_install ()
 {
 	return 0;
 }

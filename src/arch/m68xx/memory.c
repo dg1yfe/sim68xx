@@ -17,7 +17,7 @@
 #include "ireg.h"		/* ireg_getb/putb_func[], ireg_start/end */
 
 #include "memory.h"
-
+#include "callstac.h"
 
 
 /*
@@ -81,9 +81,7 @@ u_char *mem_init ()
  *
  * Used by mem print routines
  */
-static
-mem_inramrom (addr)
-	u_int addr;
+static int mem_inramrom (u_int addr)
 {
 	return 1;
 }
@@ -91,27 +89,26 @@ mem_inramrom (addr)
 /* 
  * mem_print_ascii - print ram/rom memory area in ascii
  */
-mem_print_ascii (startaddr, nbytes)
-	u_int startaddr;
-	u_int nbytes;
+void mem_print_ascii (u_int startaddr, u_int nbytes)
 {
 	u_int i, addr, value;
 
 	for (i = 0, addr = startaddr; i < nbytes; i++, addr++)
+	{
 		if (mem_inramrom (addr))
+		{
 			if (isprint(value = mem_getb (addr)))
 				putchar (value);
 			else
 				putchar ('.');
+		}
+	}
 }
 
 /*
  * mem_print - CPU independent memory dump (print only ram/rom area)
  */
-mem_print (startaddr, nbytes, nperline)
-	u_int startaddr;
-	u_int nbytes;
-	u_int nperline;
+int mem_print (u_int startaddr, u_int nbytes, u_int nperline)
 {
 	u_int i, j, addr;
 
@@ -131,3 +128,78 @@ mem_print (startaddr, nbytes, nperline)
 	}
 	return addr;
 }
+
+
+
+/*
+ *  mem_getb - called to get a byte from an address
+ */
+
+
+u_char mem_getb (u_int addr)
+{
+	int offs = addr - ireg_start;
+
+	if (breaks[addr]) {
+		break_flag = 1; /* Signal execution loop to stop */
+		break_addr = addr;
+	}
+
+	if (offs >= 0 && offs < NIREGS) {
+		if (ireg_getb_func[offs])
+			return (*ireg_getb_func[offs])(offs);
+		else
+			return iram[offs];
+	} else if (addr >= ram_start && addr <= ram_end) {
+		return ram[addr];
+	} else {
+		error ("mem_getb: addr=%04x, subroutine %04x\n",
+			addr, callstack_peek_addr ());
+		return 0;
+	}
+}
+
+
+
+u_int mem_getw (u_int addr)
+{
+	/* Make sure hi byte is accessed first */
+	u_char hi = mem_getb (addr);
+	u_char lo = mem_getb (addr + 1);
+	return (hi << 8) | lo;
+}
+
+/*
+ * mem_putb - called to write a byte to an address
+ */
+
+
+void mem_putb (u_int addr, u_char value)
+{
+	int offs = addr - ireg_start; /* Address of on-chip memory */
+
+	if (breaks[addr]) {
+		break_flag = 1; /* Signal execution loop to stop */
+		break_addr = addr;
+	}
+
+	if (offs >= 0 && offs < NIREGS) {
+		if (ireg_putb_func[offs])
+			(*ireg_putb_func[offs])(offs, value);
+		else
+			iram [offs] = value;
+	} else if (addr >= ram_start && addr <= ram_end) {
+		ram [addr] = value;
+	} else {
+		error ("mem_putb: addr=%04x, subroutine %04x\n",
+			addr, callstack_peek_addr ());
+	}
+}
+
+
+void mem_putw (u_int addr, u_int value)
+{
+	mem_putb (addr, value >> 8);		/* hi byte */
+	mem_putb (addr + 1, value & 0xFF);	/* lo byte */
+}
+

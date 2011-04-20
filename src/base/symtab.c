@@ -37,7 +37,7 @@ static struct {
 /*
  * sym_find_name - find symbol in table, return pointer to name or 0
  */
-char * sym_find_name (int value)
+char * sym_find_name (unsigned int value)
 {
 	int i;
 
@@ -48,7 +48,7 @@ char * sym_find_name (int value)
 }
 
 
-int sym_find_value (char *name, int *value)
+int sym_find_value (char *name, unsigned int *value)
 {
 	int i;
 
@@ -136,9 +136,9 @@ static struct sym_file_ass {
 	char *ext;
 	int  (*read) ();
 } file_ass[] = {
-	".map", read_aslink_file,
-	".sym", read_asm68xx_file,
-	NULL
+	{".map", read_aslink_file},
+	{".sym", read_asm68xx_file},
+	{NULL, NULL}
 };
 		
 /*
@@ -160,7 +160,7 @@ int sym_readfile (loadfile, symfile)
 	{
 		char *p;
 
-		if (p = strrchr (loadfile, '.'))
+		if ((p = strrchr (loadfile, '.')))
 			/* Skip extension from loadfile */
 			len = (p - loadfile);
 		else

@@ -8,6 +8,7 @@
 #include "defs.h"
 #include "cpu.h"
 #include "reg.h"
+#include "error.h"
 
 #ifdef USE_PROTOTYPES
 #include "callstac.h"
@@ -15,7 +16,33 @@
 
 struct regs regs;
 
-reg_setsp (value) u_int value;
+int reg_setsp (u_int value);
+
+u_int reg_postincpc	(u_int value)
+{
+	u_int pc = regs.pc; regs.pc += value;
+	return pc;
+}
+
+u_int reg_postdecsp	(u_int value)
+{
+	u_int sp = regs.sp;
+	reg_setsp (sp - value);
+	return sp;
+}
+
+u_int reg_preincsp	(u_int value)
+{
+	return reg_setsp (regs.sp + value);
+}
+
+u_int reg_incsp	(u_int value)
+{
+	return reg_setsp (regs.sp + value);
+}
+
+
+int reg_setsp (u_int value)
 {
 	if (value > regs.sp)
 	{
@@ -39,7 +66,7 @@ reg_setsp (value) u_int value;
 /*
  * print all cpu registers
  */
-reg_printall ()
+int reg_printall ()
 {
 	printf ("PC=%04x", reg_getpc ());
 
@@ -101,7 +128,7 @@ reg_printall ()
  * are available for all processors.
  * If you change it, don't forget to update the help text.
  */
-static reg_set (u_int regname, u_int regval)
+static int reg_set (u_int regname, u_int regval)
 {
 	switch (regname)
 	{
@@ -123,9 +150,7 @@ static reg_set (u_int regname, u_int regval)
  *
  * Returns 1 if command executed, else 0
  */
-reg_cmd (argc, argv)
-	int    argc;
-	char **argv;
+int reg_cmd (int    argc, char **argv)
 {
 	if (argc < 1)
 		return 0;

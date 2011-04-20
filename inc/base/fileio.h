@@ -1,5 +1,6 @@
-/* Automagically generated Fri Apr 15 23:53:50 CEST 2011 - dont edit */
 #ifndef FILEIO_H
 #define FILEIO_H
+
+extern int load_file (char *filename);
 
 #endif /* FILEIO_H */

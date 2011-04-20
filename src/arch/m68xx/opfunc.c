@@ -21,6 +21,7 @@
 #include "alu.c"	/* To get inline functions */
 
 #include "symtab.h"
+#include "callstac.h"
 /*
  *  CCR flag shorthands
  */
@@ -43,28 +44,27 @@
 /*
  * Functions returning a memory address
  */
-getaddr_dir ()	{return mem_getb (reg_postincpc (1));}
-getaddr_ext ()	{return mem_getw (reg_postincpc (2));}
-getaddr_ix  ()	{return (mem_getb (reg_postincpc (1)) + reg_getix()) & 0xffff;}
+int getaddr_dir ()	{return mem_getb (reg_postincpc (1));}
+int getaddr_ext ()	{return mem_getw (reg_postincpc (2));}
+int getaddr_ix  ()	{return (mem_getb (reg_postincpc (1)) + reg_getix()) & 0xffff;}
 
 /*
  * Functions returning the value of a memory address
  */
-getbyte_imm () {return mem_getb (reg_postincpc (1));}
-getbyte_dir () {return mem_getb (getaddr_dir ());}
-getbyte_ext () {return mem_getb (getaddr_ext ());}
-getbyte_ix  () {return mem_getb (getaddr_ix  ());}
-getword_imm () {return mem_getw (reg_postincpc (2));}
-getword_dir () {return mem_getw (getaddr_dir ());}
-getword_ext () {return mem_getw (getaddr_ext ());}
-getword_ix  () {return mem_getw (getaddr_ix  ());}
+int getbyte_imm () {return mem_getb (reg_postincpc (1));}
+int getbyte_dir () {return mem_getb (getaddr_dir ());}
+int getbyte_ext () {return mem_getb (getaddr_ext ());}
+int getbyte_ix  () {return mem_getb (getaddr_ix  ());}
+int getword_imm () {return mem_getw (reg_postincpc (2));}
+int getword_dir () {return mem_getw (getaddr_dir ());}
+int getword_ext () {return mem_getw (getaddr_ext ());}
+int getword_ix  () {return mem_getw (getaddr_ix  ());}
 
 
 /*
  * branch_expr - branch to offset pointed to by pc if expr is true
  */
-branch_expr (expr)
-	int expr;
+void branch_expr (int expr)
 {
 	s_char offs = getbyte_imm ();
 	reg_incpc (expr ? offs : 0);
@@ -73,13 +73,14 @@ branch_expr (expr)
 /*
  * Stack operators (SP points to current free stack location)
  */
-pushbyte (value) u_char value;	{mem_putb (reg_postdecsp (1), value);}
-pushword (value) u_int value;	{pushbyte (value); pushbyte (value >> 8);}
-popbyte ()
+void pushbyte (value) u_char value;	{mem_putb (reg_postdecsp (1), value);}
+void pushword (value) u_int value;	{pushbyte (value); pushbyte (value >> 8);}
+int popbyte ()
 {
 	return (mem_getb (reg_preincsp (1)));
 }
-popword ()
+
+int popword ()
 {
 	u_int hibyte = popbyte ();
 	u_int lobyte = popbyte ();
@@ -89,37 +90,35 @@ popword ()
 /*
  * Functions operating on memory address, no advance of PC (except jump class)
  */
-asr_addr (addr)
-	u_int addr;
+void asr_addr (u_int addr)
 {
 	u_int operand = mem_getb (addr);
 	mem_putb (addr, alu_shrbyte (operand, operand & 0x80));
 }
-clr_addr (addr) {mem_putb (addr, alu_clrbyte (mem_getb (addr)));}
-com_addr (addr) {mem_putb (addr, alu_combyte (mem_getb (addr)));}
-dec_addr (addr) {mem_putb (addr, alu_decbyte (mem_getb (addr)));}
-jsr_addr (addr)
+void clr_addr (addr) {mem_putb (addr, alu_clrbyte (mem_getb (addr)));}
+void com_addr (addr) {mem_putb (addr, alu_combyte (mem_getb (addr)));}
+void dec_addr (addr) {mem_putb (addr, alu_decbyte (mem_getb (addr)));}
+void jsr_addr (addr)
 {
 	pushword (reg_getpc ());	/* Return address */
 	reg_setpc (addr);
 	callstack_push (addr);	/* subroutine ref. */
 }
-inc_addr (addr)		{mem_putb (addr, alu_incbyte (mem_getb (addr)));}
-lsl_addr (addr)		{mem_putb (addr, alu_shlbyte (mem_getb (addr), 0));}
-lsr_addr (addr)		{mem_putb (addr, alu_shrbyte (mem_getb (addr), 0));}
-neg_addr (addr)		{mem_putb (addr, alu_negbyte (mem_getb (addr)));}
-rol_addr (addr)		{mem_putb (addr, alu_shlbyte (mem_getb (addr), C));}
-ror_addr (addr)		{mem_putb (addr, alu_shrbyte (mem_getb (addr), C));}
-staa_addr (addr)	{mem_putb (addr, alu_bittestbyte (reg_getacca ()));}
-stab_addr (addr)	{mem_putb (addr, alu_bittestbyte (reg_getaccb ()));}
-sts_addr (addr)		{mem_putw (addr, alu_bittestword (reg_getsp ()));}
-stx_addr (addr)		{mem_putw (addr, alu_bittestword (reg_getix ()));}
-tst_addr (addr)		{alu_testbyte (mem_getb (addr));}
+void inc_addr (addr)		{mem_putb (addr, alu_incbyte (mem_getb (addr))); }
+void lsl_addr (addr)		{mem_putb (addr, alu_shlbyte (mem_getb (addr), 0));}
+void lsr_addr (addr)		{mem_putb (addr, alu_shrbyte (mem_getb (addr), 0));}
+void neg_addr (addr)		{mem_putb (addr, alu_negbyte (mem_getb (addr)));}
+void rol_addr (addr)		{mem_putb (addr, alu_shlbyte (mem_getb (addr), C));}
+void ror_addr (addr)		{mem_putb (addr, alu_shrbyte (mem_getb (addr), C));}
+void staa_addr (addr)	{mem_putb (addr, alu_bittestbyte (reg_getacca ()));}
+void stab_addr (addr)	{mem_putb (addr, alu_bittestbyte (reg_getaccb ()));}
+void sts_addr (addr)		{mem_putw (addr, alu_bittestword (reg_getsp ()));}
+void stx_addr (addr)		{mem_putw (addr, alu_bittestword (reg_getix ()));}
+void tst_addr (addr)		{alu_testbyte (mem_getb (addr));}
 /*
  * int_addr - generate interrupt at the given vector address
  */
-int_addr (addr)
-	u_int addr;
+void int_addr (u_int addr)
 {
 	pushword (reg_getpc ());
 	pushword (reg_getix());
@@ -135,112 +134,112 @@ int_addr (addr)
 /****************************************************************************
  *	Functions simulating CPU instruction execution
  ****************************************************************************/
-aba_inh ()	{reg_setacca (alu_addbyte (reg_getacca (), reg_getaccb (), 0));}
+void aba_inh ()	{reg_setacca (alu_addbyte (reg_getacca (), reg_getaccb (), 0));}
 
-adca_imm ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_imm (), C));}
-adca_dir ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_dir (), C));}
-adca_ext ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_ext (), C));}
-adca_ind_x ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_ix  (), C));}
+void adca_imm ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_imm (), C));}
+void adca_dir ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_dir (), C));}
+void adca_ext ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_ext (), C));}
+void adca_ind_x ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_ix  (), C));}
 
-adcb_imm ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_imm (), C));}
-adcb_dir ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_dir (), C));}
-adcb_ext ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_ext (), C));}
-adcb_ind_x ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_ix  (), C));}
+void adcb_imm ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_imm (), C));}
+void adcb_dir ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_dir (), C));}
+void adcb_ext ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_ext (), C));}
+void adcb_ind_x ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_ix  (), C));}
 
-adda_imm ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_imm (), 0));}
-adda_dir ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_dir (), 0));}
-adda_ext ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_ext (), 0));}
-adda_ind_x ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_ix  (), 0));}
+void adda_imm ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_imm (), 0));}
+void adda_dir ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_dir (), 0));}
+void adda_ext ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_ext (), 0));}
+void adda_ind_x ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_ix  (), 0));}
 
-addb_imm ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_imm (), 0));}
-addb_dir ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_dir (), 0));}
-addb_ext ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_ext (), 0));}
-addb_ind_x ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_ix  (), 0));}
+void addb_imm ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_imm (), 0));}
+void addb_dir ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_dir (), 0));}
+void addb_ext ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_ext (), 0));}
+void addb_ind_x ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_ix  (), 0));}
 
-anda_imm ()	{reg_setacca (alu_andbyte (reg_getacca (), getbyte_imm ()));}
-anda_dir ()	{reg_setacca (alu_andbyte (reg_getacca (), getbyte_dir ()));}
-anda_ext ()	{reg_setacca (alu_andbyte (reg_getacca (), getbyte_ext ()));}
-anda_ind_x ()	{reg_setacca (alu_andbyte (reg_getacca (), getbyte_ix ()));}
+void anda_imm ()	{reg_setacca (alu_andbyte (reg_getacca (), getbyte_imm ()));}
+void anda_dir ()	{reg_setacca (alu_andbyte (reg_getacca (), getbyte_dir ()));}
+void anda_ext ()	{reg_setacca (alu_andbyte (reg_getacca (), getbyte_ext ()));}
+void anda_ind_x ()	{reg_setacca (alu_andbyte (reg_getacca (), getbyte_ix ()));}
 
-andb_imm ()	{reg_setaccb (alu_andbyte (reg_getaccb (), getbyte_imm ()));}
-andb_dir ()	{reg_setaccb (alu_andbyte (reg_getaccb (), getbyte_dir ()));}
-andb_ext ()	{reg_setaccb (alu_andbyte (reg_getaccb (), getbyte_ext ()));}
-andb_ind_x ()	{reg_setaccb (alu_andbyte (reg_getaccb (), getbyte_ix  ()));}
+void andb_imm ()	{reg_setaccb (alu_andbyte (reg_getaccb (), getbyte_imm ()));}
+void andb_dir ()	{reg_setaccb (alu_andbyte (reg_getaccb (), getbyte_dir ()));}
+void andb_ext ()	{reg_setaccb (alu_andbyte (reg_getaccb (), getbyte_ext ()));}
+void andb_ind_x ()	{reg_setaccb (alu_andbyte (reg_getaccb (), getbyte_ix  ()));}
 
-asr_ext ()	{asr_addr (getaddr_ext ());}
-asr_ind_x ()	{asr_addr (getaddr_ix ());}
-asra_inh ()	{reg_setacca (alu_shrbyte (reg_getacca (), reg_getacca () & 0x80));}
-asrb_inh ()	{reg_setaccb (alu_shrbyte (reg_getaccb (), reg_getaccb () & 0x80));}
+void asr_ext ()	{asr_addr (getaddr_ext ());}
+void asr_ind_x ()	{asr_addr (getaddr_ix ());}
+void asra_inh ()	{reg_setacca (alu_shrbyte (reg_getacca (), reg_getacca () & 0x80));}
+void asrb_inh ()	{reg_setaccb (alu_shrbyte (reg_getaccb (), reg_getaccb () & 0x80));}
 
-bcc_rel ()	{branch_expr (C == 0);}
-bcs_rel ()	{branch_expr (C);}
-beq_rel ()	{branch_expr (Z);}
-bge_rel ()	{branch_expr ((N ^ V) == 0);}
-bgt_rel ()	{branch_expr ((Z | (N ^ V)) == 0);}
-bhi_rel ()	{branch_expr ((C | Z ) == 0);}
+void bcc_rel ()	{branch_expr (C == 0);}
+void bcs_rel ()	{branch_expr (C);}
+void beq_rel ()	{branch_expr (Z);}
+void bge_rel ()	{branch_expr ((N ^ V) == 0);}
+void bgt_rel ()	{branch_expr ((Z | (N ^ V)) == 0);}
+void bhi_rel ()	{branch_expr ((C | Z ) == 0);}
 
-bita_imm ()	{alu_bittestbyte (reg_getacca () & getbyte_imm ());}
-bita_dir ()	{alu_bittestbyte (reg_getacca () & getbyte_dir ());}
-bita_ext ()	{alu_bittestbyte (reg_getacca () & getbyte_ext ());}
-bita_ind_x ()	{alu_bittestbyte (reg_getacca () & getbyte_ix  ());}
+void bita_imm ()	{alu_bittestbyte (reg_getacca () & getbyte_imm ());}
+void bita_dir ()	{alu_bittestbyte (reg_getacca () & getbyte_dir ());}
+void bita_ext ()	{alu_bittestbyte (reg_getacca () & getbyte_ext ());}
+void bita_ind_x ()	{alu_bittestbyte (reg_getacca () & getbyte_ix  ());}
 
-bitb_imm ()	{alu_bittestbyte (reg_getaccb () & getbyte_imm ());}
-bitb_dir ()	{alu_bittestbyte (reg_getaccb () & getbyte_dir ());}
-bitb_ext ()	{alu_bittestbyte (reg_getaccb () & getbyte_ext ());}
-bitb_ind_x ()	{alu_bittestbyte (reg_getaccb () & getbyte_ix  ());}
+void bitb_imm ()	{alu_bittestbyte (reg_getaccb () & getbyte_imm ());}
+void bitb_dir ()	{alu_bittestbyte (reg_getaccb () & getbyte_dir ());}
+void bitb_ext ()	{alu_bittestbyte (reg_getaccb () & getbyte_ext ());}
+void bitb_ind_x ()	{alu_bittestbyte (reg_getaccb () & getbyte_ix  ());}
 
-ble_rel ()	{branch_expr ((Z | (N ^ V)) == 1);}
-bls_rel ()	{branch_expr ((C | Z) == 1);}
-blt_rel ()	{branch_expr ((N ^ V) == 1);}
-bmi_rel ()	{branch_expr (N);}
-bne_rel ()	{branch_expr (Z == 0);}
-bpl_rel ()	{branch_expr (N == 0);}
-bra_rel ()	{branch_expr (1);}
-bsr_rel ()
+void ble_rel ()	{branch_expr ((Z | (N ^ V)) == 1);}
+void bls_rel ()	{branch_expr ((C | Z) == 1);}
+void blt_rel ()	{branch_expr ((N ^ V) == 1);}
+void bmi_rel ()	{branch_expr (N);}
+void bne_rel ()	{branch_expr (Z == 0);}
+void bpl_rel ()	{branch_expr (N == 0);}
+void bra_rel ()	{branch_expr (1);}
+void bsr_rel ()
 {
 	int offs = (s_char) getbyte_imm ();
 	jsr_addr (offs + reg_getpc ()); /* preserve pc evaluation order */
 }
-bvc_rel ()	{branch_expr (V==0);}
-bvs_rel ()	{branch_expr (V);}
+void bvc_rel ()	{branch_expr (V==0);}
+void bvs_rel ()	{branch_expr (V);}
 
-cba_inh ()	{alu_subbyte (reg_getacca (), reg_getaccb (), 0);}
+void cba_inh ()	{alu_subbyte (reg_getacca (), reg_getaccb (), 0);}
 
-clc_inh ()	{reg_setcflag (0);}
-cli_inh ()	{reg_setiflag (0);}
+void clc_inh ()	{reg_setcflag (0);}
+void cli_inh ()	{reg_setiflag (0);}
 
-clr_ext ()	{clr_addr (getaddr_ext ());}
-clr_ind_x ()	{clr_addr (getaddr_ix  ());}
-clra_inh ()	{reg_setacca (alu_clrbyte (reg_getacca ()));}
-clrb_inh ()	{reg_setaccb (alu_clrbyte (reg_getaccb ()));}
-clv_inh ()	{reg_setvflag (0);}
+void clr_ext ()	{clr_addr (getaddr_ext ());}
+void clr_ind_x ()	{clr_addr (getaddr_ix  ());}
+void clra_inh ()	{reg_setacca (alu_clrbyte (reg_getacca ()));}
+void clrb_inh ()	{reg_setaccb (alu_clrbyte (reg_getaccb ()));}
+void clv_inh ()	{reg_setvflag (0);}
 
-cmpa_imm ()	{alu_subbyte (reg_getacca (), getbyte_imm (), 0);}
-cmpa_dir ()	{alu_subbyte (reg_getacca (), getbyte_dir (), 0);}
-cmpa_ext ()	{alu_subbyte (reg_getacca (), getbyte_ext (), 0);}
-cmpa_ind_x ()	{alu_subbyte (reg_getacca (), getbyte_ix  (), 0);}
+void cmpa_imm ()	{alu_subbyte (reg_getacca (), getbyte_imm (), 0);}
+void cmpa_dir ()	{alu_subbyte (reg_getacca (), getbyte_dir (), 0);}
+void cmpa_ext ()	{alu_subbyte (reg_getacca (), getbyte_ext (), 0);}
+void cmpa_ind_x ()	{alu_subbyte (reg_getacca (), getbyte_ix  (), 0);}
 
-cmpb_imm ()	{alu_subbyte (reg_getaccb (), getbyte_imm (), 0);}
-cmpb_dir ()	{alu_subbyte (reg_getaccb (), getbyte_dir (), 0);}
-cmpb_ext ()	{alu_subbyte (reg_getaccb (), getbyte_ext (), 0);}
-cmpb_ind_x ()	{alu_subbyte (reg_getaccb (), getbyte_ix  (), 0);}
+void cmpb_imm ()	{alu_subbyte (reg_getaccb (), getbyte_imm (), 0);}
+void cmpb_dir ()	{alu_subbyte (reg_getaccb (), getbyte_dir (), 0);}
+void cmpb_ext ()	{alu_subbyte (reg_getaccb (), getbyte_ext (), 0);}
+void cmpb_ind_x ()	{alu_subbyte (reg_getaccb (), getbyte_ix  (), 0);}
 
-com_ext ()	{com_addr (getaddr_ext ());}
-com_ind_x ()	{com_addr (getaddr_ix  ());}
-coma_inh ()	{reg_setacca (alu_combyte (reg_getacca ()));}
-comb_inh ()	{reg_setaccb (alu_combyte (reg_getaccb ()));}
+void com_ext ()	{com_addr (getaddr_ext ());}
+void com_ind_x ()	{com_addr (getaddr_ix  ());}
+void coma_inh ()	{reg_setacca (alu_combyte (reg_getacca ()));}
+void comb_inh ()	{reg_setaccb (alu_combyte (reg_getaccb ()));}
 
-cpx_imm ()	{alu_subword (reg_getix (), getword_imm (), 0);}
-cpx_dir ()	{alu_subword (reg_getix (), getword_dir (), 0);}
-cpx_ext ()	{alu_subword (reg_getix (), getword_ext (), 0);}
-cpx_ind_x ()	{alu_subword (reg_getix (), getword_ix  (), 0);}
+void cpx_imm ()	{alu_subword (reg_getix (), getword_imm (), 0);}
+void cpx_dir ()	{alu_subword (reg_getix (), getword_dir (), 0);}
+void cpx_ext ()	{alu_subword (reg_getix (), getword_ext (), 0);}
+void cpx_ind_x ()	{alu_subword (reg_getix (), getword_ix  (), 0);}
 
 /*
  *  DAA - Decimal adjust sum of 2 BCD digits in A to two BCD nibbles in A
  *
  *  Flags: NZVC
  */
-daa_inh ()
+void daa_inh ()
 {
 	u_int result= reg_getacca ();
 
@@ -257,94 +256,94 @@ daa_inh ()
 		reg_setcflag (1);
 }
 
-dec_ext ()	{dec_addr (getaddr_ext ());}
-dec_ind_x ()	{dec_addr (getaddr_ix ());}
-deca_inh ()	{reg_setacca (alu_decbyte (reg_getacca ()));}
-decb_inh ()	{reg_setaccb (alu_decbyte (reg_getaccb ()));}
+void dec_ext ()	{dec_addr (getaddr_ext ());}
+void dec_ind_x ()	{dec_addr (getaddr_ix ());}
+void deca_inh ()	{reg_setacca (alu_decbyte (reg_getacca ()));}
+void decb_inh ()	{reg_setaccb (alu_decbyte (reg_getaccb ()));}
 
-des_inh ()	{reg_incsp (-1);}
-dex_inh ()	{reg_setix (alu_decword (reg_getix ()));}
+void des_inh ()	{reg_incsp (-1);}
+void dex_inh ()	{reg_setix (alu_decword (reg_getix ()));}
 
-eora_imm ()	{reg_setacca (alu_xorbyte (reg_getacca (), getbyte_imm ()));}
-eora_dir ()	{reg_setacca (alu_xorbyte (reg_getacca (), getbyte_dir ()));}
-eora_ext ()	{reg_setacca (alu_xorbyte (reg_getacca (), getbyte_ext ()));}
-eora_ind_x ()	{reg_setacca (alu_xorbyte (reg_getacca (), getbyte_ix  ()));}
+void eora_imm ()	{reg_setacca (alu_xorbyte (reg_getacca (), getbyte_imm ()));}
+void eora_dir ()	{reg_setacca (alu_xorbyte (reg_getacca (), getbyte_dir ()));}
+void eora_ext ()	{reg_setacca (alu_xorbyte (reg_getacca (), getbyte_ext ()));}
+void eora_ind_x ()	{reg_setacca (alu_xorbyte (reg_getacca (), getbyte_ix  ()));}
 
-eorb_imm ()	{reg_setaccb (alu_xorbyte (reg_getaccb (), getbyte_imm ()));}
-eorb_dir ()	{reg_setaccb (alu_xorbyte (reg_getaccb (), getbyte_dir ()));}
-eorb_ext ()	{reg_setaccb (alu_xorbyte (reg_getaccb (), getbyte_ext ()));}
-eorb_ind_x ()	{reg_setaccb (alu_xorbyte (reg_getaccb (), getbyte_ix  ()));}
+void eorb_imm ()	{reg_setaccb (alu_xorbyte (reg_getaccb (), getbyte_imm ()));}
+void eorb_dir ()	{reg_setaccb (alu_xorbyte (reg_getaccb (), getbyte_dir ()));}
+void eorb_ext ()	{reg_setaccb (alu_xorbyte (reg_getaccb (), getbyte_ext ()));}
+void eorb_ind_x ()	{reg_setaccb (alu_xorbyte (reg_getaccb (), getbyte_ix  ()));}
 
-inc_ext ()	{inc_addr (getaddr_ext ());}
-inc_ind_x ()	{inc_addr (getaddr_ix ());}
-inca_inh ()	{reg_setacca (alu_incbyte (reg_getacca ()));}
-incb_inh ()	{reg_setaccb (alu_incbyte (reg_getaccb ()));}
-ins_inh ()	{reg_incsp (1);}
-inx_inh ()	{reg_setix (alu_incword (reg_getix ()));}
+void inc_ext ()	{inc_addr (getaddr_ext ());}
+void inc_ind_x ()	{inc_addr (getaddr_ix ());}
+void inca_inh ()	{reg_setacca (alu_incbyte (reg_getacca ()));}
+void incb_inh ()	{reg_setaccb (alu_incbyte (reg_getaccb ()));}
+void ins_inh ()	{reg_incsp (1);}
+void inx_inh ()	{reg_setix (alu_incword (reg_getix ()));}
 
-jmp_ext ()	{reg_setpc (getaddr_ext ());}
-jmp_ind_x ()	{reg_setpc (getaddr_ix ());}
-jsr_ext ()	{jsr_addr (getaddr_ext ());}
-jsr_ind_x ()	{jsr_addr (getaddr_ix ());}
+void jmp_ext ()	{reg_setpc (getaddr_ext ());}
+void jmp_ind_x ()	{reg_setpc (getaddr_ix ());}
+void jsr_ext ()	{jsr_addr (getaddr_ext ());}
+void jsr_ind_x ()	{jsr_addr (getaddr_ix ());}
 
-ldaa_imm ()	{reg_setacca (alu_bittestbyte (getbyte_imm ()));}
-ldaa_dir ()	{reg_setacca (alu_bittestbyte (getbyte_dir ()));}
-ldaa_ext ()	{reg_setacca (alu_bittestbyte (getbyte_ext ()));}
-ldaa_ind_x ()	{reg_setacca (alu_bittestbyte (getbyte_ix ()));}
+void ldaa_imm ()	{reg_setacca (alu_bittestbyte (getbyte_imm ()));}
+void ldaa_dir ()	{reg_setacca (alu_bittestbyte (getbyte_dir ()));}
+void ldaa_ext ()	{reg_setacca (alu_bittestbyte (getbyte_ext ()));}
+void ldaa_ind_x ()	{reg_setacca (alu_bittestbyte (getbyte_ix ()));}
 
-ldab_imm ()	{reg_setaccb (alu_bittestbyte (getbyte_imm ()));}
-ldab_dir ()	{reg_setaccb (alu_bittestbyte (getbyte_dir ()));}
-ldab_ext ()	{reg_setaccb (alu_bittestbyte (getbyte_ext ()));}
-ldab_ind_x ()	{reg_setaccb (alu_bittestbyte (getbyte_ix ()));}
+void ldab_imm ()	{reg_setaccb (alu_bittestbyte (getbyte_imm ()));}
+void ldab_dir ()	{reg_setaccb (alu_bittestbyte (getbyte_dir ()));}
+void ldab_ext ()	{reg_setaccb (alu_bittestbyte (getbyte_ext ()));}
+void ldab_ind_x ()	{reg_setaccb (alu_bittestbyte (getbyte_ix ()));}
 
-lds_imm ()	{reg_setsp (alu_bittestword (getword_imm ()));}
-lds_dir ()	{reg_setsp (alu_bittestword (getword_dir ()));}
-lds_ext ()	{reg_setsp (alu_bittestword (getword_ext ()));}
-lds_ind_x ()	{reg_setsp (alu_bittestword (getword_ix  ()));}
+void lds_imm ()	{reg_setsp (alu_bittestword (getword_imm ()));}
+void lds_dir ()	{reg_setsp (alu_bittestword (getword_dir ()));}
+void lds_ext ()	{reg_setsp (alu_bittestword (getword_ext ()));}
+void lds_ind_x ()	{reg_setsp (alu_bittestword (getword_ix  ()));}
 
-ldx_imm ()	{reg_setix (alu_bittestword (getword_imm ()));}
-ldx_dir ()	{reg_setix (alu_bittestword (getword_dir ()));}
-ldx_ext ()	{reg_setix (alu_bittestword (getword_ext ()));}
-ldx_ind_x ()	{reg_setix (alu_bittestword (getword_ix  ()));}
+void ldx_imm ()	{reg_setix (alu_bittestword (getword_imm ()));}
+void ldx_dir ()	{reg_setix (alu_bittestword (getword_dir ()));}
+void ldx_ext ()	{reg_setix (alu_bittestword (getword_ext ()));}
+void ldx_ind_x ()	{reg_setix (alu_bittestword (getword_ix  ()));}
 
-lsl_ext ()	{lsl_addr (getaddr_ext ());}
-lsl_ind_x ()	{lsl_addr (getaddr_ix ());}
-lsla_inh ()	{reg_setacca (alu_shlbyte (reg_getacca (), 0));}
-lslb_inh ()	{reg_setaccb (alu_shlbyte (reg_getaccb (), 0));}
-lsr_ext ()	{lsr_addr (getaddr_ext ());}
-lsr_ind_x ()	{lsr_addr (getaddr_ix ());}
-lsra_inh ()	{reg_setacca (alu_shrbyte (reg_getacca (), 0));}
-lsrb_inh ()	{reg_setaccb (alu_shrbyte (reg_getaccb (), 0));}
+void lsl_ext ()	{lsl_addr (getaddr_ext ());}
+void lsl_ind_x ()	{lsl_addr (getaddr_ix ());}
+void lsla_inh ()	{reg_setacca (alu_shlbyte (reg_getacca (), 0));}
+void lslb_inh ()	{reg_setaccb (alu_shlbyte (reg_getaccb (), 0));}
+void lsr_ext ()	{lsr_addr (getaddr_ext ());}
+void lsr_ind_x ()	{lsr_addr (getaddr_ix ());}
+void lsra_inh ()	{reg_setacca (alu_shrbyte (reg_getacca (), 0));}
+void lsrb_inh ()	{reg_setaccb (alu_shrbyte (reg_getaccb (), 0));}
 
-neg_ext ()	{neg_addr (getaddr_ext ());}
-neg_ind_x ()	{neg_addr (getaddr_ix ());}
-nega_inh ()	{reg_setacca (alu_negbyte (reg_getacca ()));}
-negb_inh ()	{reg_setaccb (alu_negbyte (reg_getaccb ()));}
-nop_inh ()	{}
-oraa_imm ()	{reg_setacca (alu_orbyte (reg_getacca (), getbyte_imm ()));}
-oraa_dir ()	{reg_setacca (alu_orbyte (reg_getacca (), getbyte_dir ()));}
-oraa_ext ()	{reg_setacca (alu_orbyte (reg_getacca (), getbyte_ext ()));}
-oraa_ind_x ()	{reg_setacca (alu_orbyte (reg_getacca (), getbyte_ix ()));}
+void neg_ext ()	{neg_addr (getaddr_ext ());}
+void neg_ind_x ()	{neg_addr (getaddr_ix ());}
+void nega_inh ()	{reg_setacca (alu_negbyte (reg_getacca ()));}
+void negb_inh ()	{reg_setaccb (alu_negbyte (reg_getaccb ()));}
+void nop_inh ()	{}
+void oraa_imm ()	{reg_setacca (alu_orbyte (reg_getacca (), getbyte_imm ()));}
+void oraa_dir ()	{reg_setacca (alu_orbyte (reg_getacca (), getbyte_dir ()));}
+void oraa_ext ()	{reg_setacca (alu_orbyte (reg_getacca (), getbyte_ext ()));}
+void oraa_ind_x ()	{reg_setacca (alu_orbyte (reg_getacca (), getbyte_ix ()));}
 
-orab_imm ()	{reg_setaccb (alu_orbyte (reg_getaccb (), getbyte_imm ()));}
-orab_dir ()	{reg_setaccb (alu_orbyte (reg_getaccb (), getbyte_dir ()));}
-orab_ext ()	{reg_setaccb (alu_orbyte (reg_getaccb (), getbyte_ext ()));}
-orab_ind_x ()	{reg_setaccb (alu_orbyte (reg_getaccb (), getbyte_ix  ()));}
+void orab_imm ()	{reg_setaccb (alu_orbyte (reg_getaccb (), getbyte_imm ()));}
+void orab_dir ()	{reg_setaccb (alu_orbyte (reg_getaccb (), getbyte_dir ()));}
+void orab_ext ()	{reg_setaccb (alu_orbyte (reg_getaccb (), getbyte_ext ()));}
+void orab_ind_x ()	{reg_setaccb (alu_orbyte (reg_getaccb (), getbyte_ix  ()));}
 
-psha_inh ()	{pushbyte (reg_getacca ());}
-pshb_inh ()	{pushbyte (reg_getaccb ());}
-pula_inh ()	{reg_setacca (popbyte ());}
-pulb_inh ()	{reg_setaccb (popbyte ());}
+void psha_inh ()	{pushbyte (reg_getacca ());}
+void pshb_inh ()	{pushbyte (reg_getaccb ());}
+void pula_inh ()	{reg_setacca (popbyte ());}
+void pulb_inh ()	{reg_setaccb (popbyte ());}
 
-rol_ext ()	{rol_addr (getaddr_ext ());}
-rol_ind_x ()	{rol_addr (getaddr_ix  ());}
-rola_inh ()	{reg_setacca (alu_shlbyte (reg_getacca (), C));}
-rolb_inh ()	{reg_setaccb (alu_shlbyte (reg_getaccb (), C));}
-ror_ext ()	{ror_addr (getaddr_ext ());}
-ror_ind_x ()	{ror_addr (getaddr_ix ());}
-rora_inh ()	{reg_setacca (alu_shrbyte (reg_getacca (), C));}
-rorb_inh ()	{reg_setaccb (alu_shrbyte (reg_getaccb (), C));}
-rti_inh ()
+void rol_ext ()	{rol_addr (getaddr_ext ());}
+void rol_ind_x ()	{rol_addr (getaddr_ix  ());}
+void rola_inh ()	{reg_setacca (alu_shlbyte (reg_getacca (), C));}
+void rolb_inh ()	{reg_setaccb (alu_shlbyte (reg_getaccb (), C));}
+void ror_ext ()	{ror_addr (getaddr_ext ());}
+void ror_ind_x ()	{ror_addr (getaddr_ix ());}
+void rora_inh ()	{reg_setacca (alu_shrbyte (reg_getacca (), C));}
+void rorb_inh ()	{reg_setaccb (alu_shrbyte (reg_getaccb (), C));}
+void rti_inh ()
 {
 	reg_setccr  (popbyte ());
 	reg_setaccb (popbyte ());
@@ -352,55 +351,55 @@ rti_inh ()
 	reg_setix   (popword ());
 	reg_setpc   (popword ());
 }
-rts_inh ()	{reg_setpc (popword ());}
-sba_inh ()	{reg_setacca (alu_subbyte (reg_getacca (), reg_getaccb (), 0));}
-sbca_imm ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_imm (), C));}
-sbca_dir ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_dir (), C));}
-sbca_ext ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_ext (), C));}
-sbca_ind_x ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_ix  (), C));}
-sbcb_imm ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_imm (), C));}
-sbcb_dir ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_dir (), C));}
-sbcb_ext ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_ext (), C));}
-sbcb_ind_x ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_ix  (), C));}
-sec_inh ()	{reg_setcflag (1);}
-sei_inh ()	{reg_setiflag (1);}
-sev_inh ()	{reg_setvflag (1);}
+void rts_inh ()	{reg_setpc (popword ());}
+void sba_inh ()	{reg_setacca (alu_subbyte (reg_getacca (), reg_getaccb (), 0));}
+void sbca_imm ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_imm (), C));}
+void sbca_dir ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_dir (), C));}
+void sbca_ext ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_ext (), C));}
+void sbca_ind_x ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_ix  (), C));}
+void sbcb_imm ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_imm (), C));}
+void sbcb_dir ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_dir (), C));}
+void sbcb_ext ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_ext (), C));}
+void sbcb_ind_x ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_ix  (), C));}
+void sec_inh ()	{reg_setcflag (1);}
+void sei_inh ()	{reg_setiflag (1);}
+void sev_inh ()	{reg_setvflag (1);}
 
-staa_dir ()	{staa_addr (getaddr_dir ());}
-staa_ext ()	{staa_addr (getaddr_ext ());}
-staa_ind_x ()	{staa_addr (getaddr_ix ());}
-stab_dir ()	{stab_addr (getaddr_dir ());}
-stab_ext ()	{stab_addr (getaddr_ext ());}
-stab_ind_x ()	{stab_addr (getaddr_ix  ());}
-sts_dir ()	{sts_addr (getaddr_dir ());}
-sts_ext ()	{sts_addr (getaddr_ext ());}
-sts_ind_x ()	{sts_addr (getaddr_ix  ());}
-stx_dir ()	{stx_addr (getaddr_dir ());}
-stx_ext ()	{stx_addr (getaddr_ext ());}
-stx_ind_x ()	{stx_addr (getaddr_ix ());}
+void staa_dir ()	{staa_addr (getaddr_dir ());}
+void staa_ext ()	{staa_addr (getaddr_ext ());}
+void staa_ind_x ()	{staa_addr (getaddr_ix ());}
+void stab_dir ()	{stab_addr (getaddr_dir ());}
+void stab_ext ()	{stab_addr (getaddr_ext ());}
+void stab_ind_x ()	{stab_addr (getaddr_ix  ());}
+void sts_dir ()	{sts_addr (getaddr_dir ());}
+void sts_ext ()	{sts_addr (getaddr_ext ());}
+void sts_ind_x ()	{sts_addr (getaddr_ix  ());}
+void stx_dir ()	{stx_addr (getaddr_dir ());}
+void stx_ext ()	{stx_addr (getaddr_ext ());}
+void stx_ind_x ()	{stx_addr (getaddr_ix ());}
 
-suba_imm ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_imm (), 0));}
-suba_dir ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_dir (), 0));}
-suba_ext ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_ext (), 0));}
-suba_ind_x ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_ix  (), 0));}
+void suba_imm ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_imm (), 0));}
+void suba_dir ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_dir (), 0));}
+void suba_ext ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_ext (), 0));}
+void suba_ind_x ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_ix  (), 0));}
 
-subb_imm ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_imm (), 0));}
-subb_dir ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_dir (), 0));}
-subb_ext ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_ext (), 0));}
-subb_ind_x ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_ix  (), 0));}
+void subb_imm ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_imm (), 0));}
+void subb_dir ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_dir (), 0));}
+void subb_ext ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_ext (), 0));}
+void subb_ind_x ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_ix  (), 0));}
 
-swi_inh ()	{int_addr (0xFFFC);}
-tab_inh ()	{reg_setaccb (alu_bittestbyte (reg_getacca ()));}
-tap_inh ()	{reg_setccr (reg_getacca ());}
-tba_inh ()	{reg_setacca (alu_bittestbyte (reg_getaccb()));}
-tpa_inh ()	{reg_setacca (reg_getccr ());}
+void swi_inh ()	{int_addr (SWIVECTOR);}
+void tab_inh ()	{reg_setaccb (alu_bittestbyte (reg_getacca ()));}
+void tap_inh ()	{reg_setccr (reg_getacca ());}
+void tba_inh ()	{reg_setacca (alu_bittestbyte (reg_getaccb()));}
+void tpa_inh ()	{reg_setacca (reg_getccr ());}
 /*
  * trap - called when an unknown opcode is found
  *
  * 6301 fetches trap vector at $FFEE,
  * hope 6800 does the same
  */
-trap ()
+void trap ()
 {
 	u_int  routine = callstack_peek_addr ();
 	char  * p = sym_find_name (routine);
@@ -409,13 +408,13 @@ trap ()
 		 reg_getpc (), routine, p ? p : "");
 	int_addr (0xffee); /* Trap vector 6301 */
 }
-tst_ext ()	{alu_testbyte (getbyte_ext ());}
-tst_ind_x ()	{alu_testbyte (getbyte_ix ());}
-tsta_inh ()	{alu_testbyte (reg_getacca ());}
-tstb_inh ()	{alu_testbyte (reg_getaccb ());}
-tsx_inh ()	{reg_setix (reg_getsp () + 1);}
-txs_inh ()	{reg_setsp (reg_getix () - 1);}
-wai_inh ()
+void tst_ext ()	{alu_testbyte (getbyte_ext ());}
+void tst_ind_x ()	{alu_testbyte (getbyte_ix ());}
+void tsta_inh ()	{alu_testbyte (reg_getacca ());}
+void tstb_inh ()	{alu_testbyte (reg_getaccb ());}
+void tsx_inh ()	{reg_setix (reg_getsp () + 1);}
+void txs_inh ()	{reg_setsp (reg_getix () - 1);}
+void wai_inh ()
 {
 /*
  *	clock (12);
@@ -428,34 +427,34 @@ wai_inh ()
 /* 6801 extensions to 6800 */
 /*====================================================================*/
 
-abx_inh ()    {reg_setix (reg_getix () + reg_getaccb ());}
-addd_imm ()   {reg_setaccd (alu_addword (reg_getaccd () ,getword_imm (), 0));}
-addd_dir ()   {reg_setaccd (alu_addword (reg_getaccd () ,getword_dir (), 0));}
-addd_ext ()   {reg_setaccd (alu_addword (reg_getaccd () ,getword_ext (), 0));}
-addd_ind_x () {reg_setaccd (alu_addword (reg_getaccd () ,getword_ix  (), 0));}
-asld_inh ()   {lsld_inh ();}	/*  Equal to Logical Shift Left */
-brn_rel ()    {branch_expr (0);}
-jsr_dir ()    {jsr_addr (getaddr_dir ());}
-ldd_imm ()    {reg_setaccd (alu_bittestword (getword_imm ()));}
-ldd_dir ()    {reg_setaccd (alu_bittestword (getword_dir ()));}
-ldd_ext ()    {reg_setaccd (alu_bittestword (getword_ext ()));}
-ldd_ind_x ()  {reg_setaccd (alu_bittestword (getword_ix ()));}
-lsld_inh ()   {reg_setaccd (alu_shlword (reg_getaccd (), 0));}
-lsrd_inh ()   {reg_setaccd (alu_shrword (reg_getaccd (), 0));}
-mul_inh ()
+void abx_inh ()    {reg_setix (reg_getix () + reg_getaccb ());}
+void addd_imm ()   {reg_setaccd (alu_addword (reg_getaccd () ,getword_imm (), 0));}
+void addd_dir ()   {reg_setaccd (alu_addword (reg_getaccd () ,getword_dir (), 0));}
+void addd_ext ()   {reg_setaccd (alu_addword (reg_getaccd () ,getword_ext (), 0));}
+void addd_ind_x () {reg_setaccd (alu_addword (reg_getaccd () ,getword_ix  (), 0));}
+void asld_inh ()   {lsld_inh ();}	/*  Equal to Logical Shift Left */
+void brn_rel ()    {branch_expr (0);}
+void jsr_dir ()    {jsr_addr (getaddr_dir ());}
+void ldd_imm ()    {reg_setaccd (alu_bittestword (getword_imm ()));}
+void ldd_dir ()    {reg_setaccd (alu_bittestword (getword_dir ()));}
+void ldd_ext ()    {reg_setaccd (alu_bittestword (getword_ext ()));}
+void ldd_ind_x ()  {reg_setaccd (alu_bittestword (getword_ix ()));}
+void lsld_inh ()   {reg_setaccd (alu_shlword (reg_getaccd (), 0));}
+void lsrd_inh ()   {reg_setaccd (alu_shrword (reg_getaccd (), 0));}
+void mul_inh ()
 {
 	reg_setaccd (reg_getacca () * reg_getaccb ());
 	reg_setcflag (reg_getaccb () & 0x80);
 }
-pshx_inh ()	{pushword (reg_getix ());}
-pulx_inh ()	{reg_setix (popword ());}
-std_dir ()	{mem_putw (getaddr_dir (), alu_bittestword (reg_getaccd ()));}
-std_ext ()	{mem_putw (getaddr_ext (), alu_bittestword (reg_getaccd ()));}
-std_ind_x ()	{mem_putw (getaddr_ix (),  alu_bittestword (reg_getaccd ()));}
-subd_imm ()   {reg_setaccd (alu_subword (reg_getaccd (), getword_imm (), 0));}
-subd_dir ()   {reg_setaccd (alu_subword (reg_getaccd (), getword_dir (), 0));}
-subd_ext ()   {reg_setaccd (alu_subword (reg_getaccd (), getword_ext (), 0));}
-subd_ind_x () {reg_setaccd (alu_subword (reg_getaccd (), getword_ix  (), 0));}
+void pshx_inh ()	{pushword (reg_getix ());}
+void pulx_inh ()	{reg_setix (popword ());}
+void std_dir ()	{mem_putw (getaddr_dir (), alu_bittestword (reg_getaccd ()));}
+void std_ext ()	{mem_putw (getaddr_ext (), alu_bittestword (reg_getaccd ()));}
+void std_ind_x ()	{mem_putw (getaddr_ix (),  alu_bittestword (reg_getaccd ()));}
+void subd_imm ()   {reg_setaccd (alu_subword (reg_getaccd (), getword_imm (), 0));}
+void subd_dir ()   {reg_setaccd (alu_subword (reg_getaccd (), getword_dir (), 0));}
+void subd_ext ()   {reg_setaccd (alu_subword (reg_getaccd (), getword_ext (), 0));}
+void subd_ind_x () {reg_setaccd (alu_subword (reg_getaccd (), getword_ix  (), 0));}
 
 #ifndef M6805 /* 6805 does not use these */
 
@@ -482,7 +481,7 @@ subd_ind_x () {reg_setaccd (alu_subword (reg_getaccd (), getword_ix  (), 0));}
 /*
  *  aim - And Immediate with Memory
  */
-aim_dir ()
+void aim_dir ()
 {
 	u_int immed	= mem_getb (reg_getpc());
 	u_int addr	= mem_getb (reg_getpc() + 1);
@@ -491,7 +490,7 @@ aim_dir ()
 	reg_incpc (2);
 }
 
-aim_ind_x ()
+void aim_ind_x ()
 {
 	u_int immed	= mem_getb (reg_getpc());
 	u_int offs	= mem_getb (reg_getpc() + 1);
@@ -505,7 +504,7 @@ aim_ind_x ()
 /*
  * eim - Exclusive or Immediate with Memory
  */
-eim_dir ()
+void eim_dir ()
 {
 	u_int immed	= mem_getb (reg_getpc());
 	u_int addr	= mem_getb (reg_getpc() + 1);
@@ -514,7 +513,7 @@ eim_dir ()
 	reg_incpc (2);
 }
 
-eim_ind_x ()
+void eim_ind_x ()
 {
 	u_int immed	= mem_getb (reg_getpc());
 	u_int offs	= mem_getb (reg_getpc() + 1);
@@ -528,7 +527,7 @@ eim_ind_x ()
 /*
  * oim - Or (inclusive) Immediate with Memory
  */
-oim_dir ()
+void oim_dir ()
 {
 	u_int immed	= mem_getb (reg_getpc());
 	u_int addr	= mem_getb (reg_getpc() + 1);
@@ -537,7 +536,7 @@ oim_dir ()
 	reg_incpc (2);
 }
 
-oim_ind_x ()
+void oim_ind_x ()
 {
 	u_int immed	= mem_getb (reg_getpc());
 	u_int offs	= mem_getb (reg_getpc() + 1);
@@ -551,7 +550,7 @@ oim_ind_x ()
 /*
  * tim - Test Immediate with Memory
  */
-tim_dir ()
+void tim_dir ()
 {
 	u_int immed	= mem_getb (reg_getpc());
 	u_int addr	= mem_getb (reg_getpc() + 1);
@@ -560,7 +559,7 @@ tim_dir ()
 	reg_incpc (2);
 }
 
-tim_ind_x ()
+void tim_ind_x ()
 {
 	u_int immed	= mem_getb (reg_getpc());
 	u_int offs	= mem_getb (reg_getpc() + 1);
@@ -571,19 +570,21 @@ tim_ind_x ()
 }
 
 
-xgdx_inh ()
+void xgdx_inh ()
 {
 	u_int old_x = reg_getix();
 	reg_setix (reg_getaccd ());
 	reg_setaccd (old_x);
 }
 
-slp_inh ()
+void slp_inh ()
 {
 	/* cpu.state = sleep; */
 }
 
+#endif
 
+#ifdef M6811
 /*====================================================================*/
 /* opfunc.c - 6811 functions executing opcodes */
 /*====================================================================*/
@@ -595,13 +596,13 @@ slp_inh ()
 /*
  * Functions returning a memory address
  */
-getaddr_iy  ()	{return (mem_getb (reg_postincpc (1)) + reg_getiy ()) & 0xffff;}
+int getaddr_iy  ()	{return (mem_getb (reg_postincpc (1)) + reg_getiy ()) & 0xffff;}
 
 /*
  * Functions returning the value of a memory address
  */
-getbyte_iy  () { return mem_getb (getaddr_iy ());}
-getword_iy  () { return mem_getw (getaddr_iy ());}
+int getbyte_iy  () { return mem_getb (getaddr_iy ());}
+int getword_iy  () { return mem_getw (getaddr_iy ());}
 
 
 /*
@@ -616,7 +617,7 @@ getword_iy  () { return mem_getw (getaddr_iy ());}
 /*
  * bset_addr - set bits in 'mask' operand for the byte at address 'addr'
  */
-bset_addr (addr)
+void bset_addr (addr)
 	u_int addr;
 {
 	u_char mask = getbyte_imm ();
@@ -626,14 +627,14 @@ bset_addr (addr)
 /*
  * bclr_addr - clear bits in 'mask' operand for the byte at address 'addr'
  */
-bclr_addr (addr)
+void bclr_addr (addr)
 	u_int addr;
 {
 	u_char mask = getbyte_imm ();
 	mem_putb (addr, alu_andbyte (mem_getb (addr), ~mask));
 }
 
-int_6811 (addr)
+void int_6811 (addr)
 	u_int addr;
 {
 	pushword (reg_getpc ());
@@ -650,75 +651,75 @@ int_6811 (addr)
 /*
  * ABY - Add B to Y (set no flags)
  */
-aby_inh ()	{reg_setiy (reg_getiy () + reg_getaccb ());}
+void aby_inh ()	{reg_setiy (reg_getiy () + reg_getaccb ());}
 
-adca_ind_y ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_iy (), C));}
-adcb_ind_y ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_iy (), C));}
-adda_ind_y ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_iy (), 0));}
-addb_ind_y ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_iy (), 0));}
-addd_ind_y ()	{reg_setaccd (alu_addword (reg_getaccd (), getword_iy (), 0));}
-anda_ind_y ()	{reg_setacca (alu_andbyte (reg_getacca (), getbyte_iy ()));}
-andb_ind_y ()	{reg_setaccb (alu_andbyte (reg_getaccb (), getbyte_iy ()));}
-asl_ind_y ()	{lsl_ind_y ();}
-asr_ind_y ()	{asr_addr (getaddr_iy ());}
+void adca_ind_y ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_iy (), C));}
+void adcb_ind_y ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_iy (), C));}
+void adda_ind_y ()	{reg_setacca (alu_addbyte (reg_getacca (), getbyte_iy (), 0));}
+void addb_ind_y ()	{reg_setaccb (alu_addbyte (reg_getaccb (), getbyte_iy (), 0));}
+void addd_ind_y ()	{reg_setaccd (alu_addword (reg_getaccd (), getword_iy (), 0));}
+void anda_ind_y ()	{reg_setacca (alu_andbyte (reg_getacca (), getbyte_iy ()));}
+void andb_ind_y ()	{reg_setaccb (alu_andbyte (reg_getaccb (), getbyte_iy ()));}
+void asl_ind_y ()	{lsl_ind_y ();}
+void asr_ind_y ()	{asr_addr (getaddr_iy ());}
 
 /*
  * bclr m,n - clr bits in bitmask 'n' of location 'm'
  */
-bclr_dir ()	{bclr_addr (getaddr_dir ());}
-bclr_ind_x ()	{bclr_addr (getaddr_ix ());}
-bclr_ind_y ()	{bclr_addr (getaddr_iy ());}
+void bclr_dir ()	{bclr_addr (getaddr_dir ());}
+void bclr_ind_x ()	{bclr_addr (getaddr_ix ());}
+void bclr_ind_y ()	{bclr_addr (getaddr_iy ());}
 
 /*
  * Bit Test A with Memory, set N, Z, V flags
  */
-bita_ind_y ()	{alu_bittestbyte (reg_getacca () & getbyte_iy ());}
-bitb_ind_y ()	{alu_bittestbyte (reg_getaccb () & getbyte_iy ());}
+void bita_ind_y ()	{alu_bittestbyte (reg_getacca () & getbyte_iy ());}
+void bitb_ind_y ()	{alu_bittestbyte (reg_getaccb () & getbyte_iy ());}
 
 /*
  * brclr m,n,r - branch relative offset 'r' if the bits in bitmask 'n'
  *		 of location 'm' are zero
  */
-brclr_dir ()	{branch_expr (!(getbyte_dir () & getbyte_imm ()));}
-brclr_ind_x ()	{branch_expr (!(getbyte_ix  () & getbyte_imm ()));}
-brclr_ind_y ()	{branch_expr (!(getbyte_iy  () & getbyte_imm ()));}
+void brclr_dir ()	{branch_expr (!(getbyte_dir () & getbyte_imm ()));}
+void brclr_ind_x ()	{branch_expr (!(getbyte_ix  () & getbyte_imm ()));}
+void brclr_ind_y ()	{branch_expr (!(getbyte_iy  () & getbyte_imm ()));}
 
 /*
  * brset m,n,r - branch relative offset 'r' if the bits in bitmask 'n'
  *		 of location 'm' are set
  */
-brset_dir ()	{branch_expr (getbyte_dir () & getbyte_imm ());}
-brset_ind_x ()	{branch_expr (getbyte_ix  () & getbyte_imm ());}
-brset_ind_y ()	{branch_expr (getbyte_iy  () & getbyte_imm ());}
+void brset_dir ()	{branch_expr (getbyte_dir () & getbyte_imm ());}
+void brset_ind_x ()	{branch_expr (getbyte_ix  () & getbyte_imm ());}
+void brset_ind_y ()	{branch_expr (getbyte_iy  () & getbyte_imm ());}
 
 
 /*
  * bset m,n - set bits in bitmask 'n' of location 'm'
  */
-bset_dir ()	{bset_addr (getaddr_dir ());}
-bset_ind_x ()	{bset_addr (getaddr_ix ());}
-bset_ind_y ()	{bset_addr (getaddr_iy ());}
+void bset_dir ()	{bset_addr (getaddr_dir ());}
+void bset_ind_x ()	{bset_addr (getaddr_ix ());}
+void bset_ind_y ()	{bset_addr (getaddr_iy ());}
 
-clr_ind_y ()	{clr_addr (getaddr_iy ());}
+void clr_ind_y ()	{clr_addr (getaddr_iy ());}
 
-cmpa_ind_y ()	{alu_subbyte (reg_getacca (), getbyte_iy (), 0);}
-cmpb_ind_y ()	{alu_subbyte (reg_getaccb (), getbyte_iy (), 0);}
-com_ind_y ()	{com_addr    (getaddr_iy ());}
-cpd_imm ()	{alu_subword (reg_getaccd (), getword_imm (), 0);}
-cpd_dir ()	{alu_subword (reg_getaccd (), getword_dir (), 0);}
-cpd_ext ()	{alu_subword (reg_getaccd (), getword_ext (), 0);}
-cpd_ind_x ()	{alu_subword (reg_getaccd (), getword_ix  (), 0);}
-cpd_ind_y ()	{alu_subword (reg_getaccd (), getword_iy  (), 0);}
-cpx_ind_y ()	{alu_subword (reg_getix (),   getword_iy  (), 0);}
-cpy_imm ()	{alu_subword (reg_getiy (),   getword_imm (), 0);}
-cpy_dir ()	{alu_subword (reg_getiy (),   getword_dir (), 0);}
-cpy_ext ()	{alu_subword (reg_getiy (),   getword_ext (), 0);}
-cpy_ind_x ()	{alu_subword (reg_getiy (),   getword_ix  (), 0);}
-cpy_ind_y ()	{alu_subword (reg_getiy (),   getword_iy  (), 0);}
-dec_ind_y ()	{dec_addr    (getaddr_iy ());}
-dey_inh ()	{reg_setiy   (alu_decword (reg_getiy ()));}
-eora_ind_y ()	{reg_setacca (alu_xorbyte (reg_getacca (), getbyte_iy ()));}
-eorb_ind_y ()	{reg_setaccb (alu_xorbyte (reg_getaccb (), getbyte_iy ()));}
+void cmpa_ind_y ()	{alu_subbyte (reg_getacca (), getbyte_iy (), 0);}
+void cmpb_ind_y ()	{alu_subbyte (reg_getaccb (), getbyte_iy (), 0);}
+void com_ind_y ()	{com_addr    (getaddr_iy ());}
+void cpd_imm ()	{alu_subword (reg_getaccd (), getword_imm (), 0);}
+void cpd_dir ()	{alu_subword (reg_getaccd (), getword_dir (), 0);}
+void cpd_ext ()	{alu_subword (reg_getaccd (), getword_ext (), 0);}
+void cpd_ind_x ()	{alu_subword (reg_getaccd (), getword_ix  (), 0);}
+void cpd_ind_y ()	{alu_subword (reg_getaccd (), getword_iy  (), 0);}
+void cpx_ind_y ()	{alu_subword (reg_getix (),   getword_iy  (), 0);}
+void cpy_imm ()	{alu_subword (reg_getiy (),   getword_imm (), 0);}
+void cpy_dir ()	{alu_subword (reg_getiy (),   getword_dir (), 0);}
+void cpy_ext ()	{alu_subword (reg_getiy (),   getword_ext (), 0);}
+void cpy_ind_x ()	{alu_subword (reg_getiy (),   getword_ix  (), 0);}
+void cpy_ind_y ()	{alu_subword (reg_getiy (),   getword_iy  (), 0);}
+void dec_ind_y ()	{dec_addr    (getaddr_iy ());}
+void dey_inh ()	{reg_setiy   (alu_decword (reg_getiy ()));}
+void eora_ind_y ()	{reg_setacca (alu_xorbyte (reg_getacca (), getbyte_iy ()));}
+void eorb_ind_y ()	{reg_setaccb (alu_xorbyte (reg_getaccb (), getbyte_iy ()));}
 
 /*
  *  IDIV - Integer divide
@@ -727,7 +728,7 @@ eorb_ind_y ()	{reg_setaccb (alu_xorbyte (reg_getaccb (), getbyte_iy ()));}
  *
  *  partially implemented - enough for most cases
  */
-idiv_inh ()
+void idiv_inh ()
 {
 	u_int d = reg_getaccd ();
 	u_int x = reg_getix ();
@@ -761,7 +762,7 @@ idiv_inh ()
  *
  *  partially implemented - enough for most cases
  */
-fdiv_inh ()
+void fdiv_inh ()
 {
 	u_int d = reg_getaccd ();
 	u_int x = reg_getix ();
@@ -781,32 +782,32 @@ fdiv_inh ()
 	reg_setcflag (reg_getaccd() > 65535); /* 0 */
 }
 
-inc_ind_y ()	{inc_addr  (getaddr_iy ());}
-iny_inh ()	{reg_setiy (alu_incword (reg_getiy ()));}
+void inc_ind_y ()	{inc_addr  (getaddr_iy ());}
+void iny_inh ()	{reg_setiy (alu_incword (reg_getiy ()));}
 
-jmp_ind_y ()	{reg_setpc (getaddr_iy ());}
-jsr_ind_y ()	{jsr_addr  (getaddr_iy ());}
+void jmp_ind_y ()	{reg_setpc (getaddr_iy ());}
+void jsr_ind_y ()	{jsr_addr  (getaddr_iy ());}
 
-ldaa_ind_y ()	{reg_setacca (alu_bittestbyte (getbyte_iy ()));}
-ldab_ind_y ()	{reg_setaccb (alu_bittestbyte (getbyte_iy ()));}
-ldd_ind_y ()	{reg_setaccd (alu_bittestword (getword_iy ()));}
-ldx_ind_y ()	{reg_setix (alu_bittestword (getword_iy ()));}
-lds_ind_y ()	{reg_setsp (alu_bittestword (getword_iy ()));}
-ldy_imm ()	{reg_setiy (alu_bittestword (getword_imm ()));}
-ldy_dir ()	{reg_setiy (alu_bittestword (getword_dir ()));}
-ldy_ext ()	{reg_setiy (alu_bittestword (getword_ext ()));}
-ldy_ind_x ()	{reg_setiy (alu_bittestword (getword_ix ()));}
-ldy_ind_y ()	{reg_setiy (alu_bittestword (getword_iy ()));}
-lsl_ind_y ()	{lsl_addr  (getaddr_iy ());}
-lsr_ind_y ()	{lsr_addr  (getaddr_iy ());}
-neg_ind_y ()	{neg_addr  (getaddr_iy ());}
-oraa_ind_y ()	{reg_setacca (alu_orbyte (reg_getacca (), getbyte_iy ()));}
-orab_ind_y ()	{reg_setaccb (alu_orbyte (reg_getaccb (), getbyte_iy ()));}
-pshy_inh ()	{pushword (reg_getiy ());}
-puly_inh ()	{reg_setiy (popword ());}
-rol_ind_y ()	{rol_addr (getaddr_iy ());}
-ror_ind_y ()	{ror_addr (getaddr_iy ());}
-rti_6811 ()
+void ldaa_ind_y ()	{reg_setacca (alu_bittestbyte (getbyte_iy ()));}
+void ldab_ind_y ()	{reg_setaccb (alu_bittestbyte (getbyte_iy ()));}
+void ldd_ind_y ()	{reg_setaccd (alu_bittestword (getword_iy ()));}
+void ldx_ind_y ()	{reg_setix (alu_bittestword (getword_iy ()));}
+void lds_ind_y ()	{reg_setsp (alu_bittestword (getword_iy ()));}
+void ldy_imm ()	{reg_setiy (alu_bittestword (getword_imm ()));}
+void ldy_dir ()	{reg_setiy (alu_bittestword (getword_dir ()));}
+void ldy_ext ()	{reg_setiy (alu_bittestword (getword_ext ()));}
+void ldy_ind_x ()	{reg_setiy (alu_bittestword (getword_ix ()));}
+void ldy_ind_y ()	{reg_setiy (alu_bittestword (getword_iy ()));}
+void lsl_ind_y ()	{lsl_addr  (getaddr_iy ());}
+void lsr_ind_y ()	{lsr_addr  (getaddr_iy ());}
+void neg_ind_y ()	{neg_addr  (getaddr_iy ());}
+void oraa_ind_y ()	{reg_setacca (alu_orbyte (reg_getacca (), getbyte_iy ()));}
+void orab_ind_y ()	{reg_setaccb (alu_orbyte (reg_getaccb (), getbyte_iy ()));}
+void pshy_inh ()	{pushword (reg_getiy ());}
+void puly_inh ()	{reg_setiy (popword ());}
+void rol_ind_y ()	{rol_addr (getaddr_iy ());}
+void ror_ind_y ()	{ror_addr (getaddr_iy ());}
+void rti_6811 ()
 {
 	reg_setccr (popbyte ());
 	reg_setaccb (popbyte ());
@@ -815,24 +816,24 @@ rti_6811 ()
 	reg_setiy (popword ());
 	reg_setpc (popword ());
 }
-sbca_ind_y ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_iy (), 0));}
-sbcb_ind_y ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_iy (), 0));}
-staa_ind_y ()	{mem_putb (getaddr_iy  (), alu_bittestbyte (reg_getacca ()));}
-stab_ind_y ()	{mem_putb (getaddr_iy  (), alu_bittestbyte (reg_getaccb ()));}
-std_ind_y ()	{mem_putw (getaddr_iy  (), alu_bittestword (reg_getaccd ()));}
-sts_ind_y ()	{mem_putw (getaddr_iy  (), alu_bittestword (reg_getsp ()));}
-stx_ind_y ()	{mem_putw (getaddr_iy  (), alu_bittestword (reg_getix ()));}
-sty_dir ()	{mem_putw (getaddr_dir (), alu_bittestword (reg_getiy ()));}
-sty_ext ()	{mem_putw (getaddr_ext (), alu_bittestword (reg_getiy ()));}
-sty_ind_x ()	{mem_putw (getaddr_ix  (), alu_bittestword (reg_getiy ()));}
-sty_ind_y ()	{mem_putw (getaddr_iy  (), alu_bittestword (reg_getiy ()));}
-stop_inh ()	{reg_setpc (reg_getpc () - 1);}	/* Infinite loop */
-suba_ind_y ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_iy (), 0));}
-subb_ind_y ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_iy (), 0));}
-subd_ind_y ()	{reg_setaccd (alu_subword (reg_getaccd (), getword_iy (), 0));}
-swi_6811 ()	{int_6811 (0xfff6);}
-test_inh ()	{reg_setpc (reg_getpc () -1);} /* Infinite loop */
-trap_6811 ()
+void sbca_ind_y ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_iy (), 0));}
+void sbcb_ind_y ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_iy (), 0));}
+void staa_ind_y ()	{mem_putb (getaddr_iy  (), alu_bittestbyte (reg_getacca ()));}
+void stab_ind_y ()	{mem_putb (getaddr_iy  (), alu_bittestbyte (reg_getaccb ()));}
+void std_ind_y ()	{mem_putw (getaddr_iy  (), alu_bittestword (reg_getaccd ()));}
+void sts_ind_y ()	{mem_putw (getaddr_iy  (), alu_bittestword (reg_getsp ()));}
+void stx_ind_y ()	{mem_putw (getaddr_iy  (), alu_bittestword (reg_getix ()));}
+void sty_dir ()	{mem_putw (getaddr_dir (), alu_bittestword (reg_getiy ()));}
+void sty_ext ()	{mem_putw (getaddr_ext (), alu_bittestword (reg_getiy ()));}
+void sty_ind_x ()	{mem_putw (getaddr_ix  (), alu_bittestword (reg_getiy ()));}
+void sty_ind_y ()	{mem_putw (getaddr_iy  (), alu_bittestword (reg_getiy ()));}
+void stop_inh ()	{reg_setpc (reg_getpc () - 1);}	/* Infinite loop */
+void suba_ind_y ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_iy (), 0));}
+void subb_ind_y ()	{reg_setaccb (alu_subbyte (reg_getaccb (), getbyte_iy (), 0));}
+void subd_ind_y ()	{reg_setaccd (alu_subword (reg_getaccd (), getword_iy (), 0));}
+void swi_6811 ()	{int_6811 (0xfff6);}
+void test_inh ()	{reg_setpc (reg_getpc () -1);} /* Infinite loop */
+void trap_6811 ()
 {
 	u_int  routine = callstack_peek_addr ();
 	char  *p       = (char *) sym_find_name (routine);
@@ -841,17 +842,18 @@ trap_6811 ()
 		 reg_getpc (), routine, p ? p : "");
 	int_6811 (0xfff8);
 }
-tst_ind_y ()	{alu_testbyte (getbyte_iy ());}
-tsy_inh ()	{reg_setiy (reg_getsp () + 1);}
-tys_inh ()	{reg_setsp (reg_getiy () - 1);}
-xgdy_inh ()
+void tst_ind_y ()	{alu_testbyte (getbyte_iy ());}
+void tsy_inh ()	{reg_setiy (reg_getsp () + 1);}
+void tys_inh ()	{reg_setsp (reg_getiy () - 1);}
+void xgdy_inh ()
 {
 	u_int old_y = reg_getiy ();
 	reg_setiy (reg_getaccd ());
 	reg_setaccd (old_y);
 }
+#endif
 
-#else /* compiling for M6805 */
+#ifdef M6805 /* compiling for M6805 */
 
 /*====================================================================*/
 /* m6805instr.c - 6805 specific instructions */

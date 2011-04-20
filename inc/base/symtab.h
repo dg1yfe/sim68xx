@@ -8,8 +8,8 @@
 # define _P(s) ()
 #endif
 
-extern char * sym_find_name _P((int value));
-extern int sym_find_value _P((char *name, int *value));
+extern char * sym_find_name _P((unsigned int value));
+extern int sym_find_value _P((char *name, unsigned int *value));
 extern int sym_add _P((int value, char *name));
 extern int sym_readfile _P((char *loadfile, char *symfile));
 

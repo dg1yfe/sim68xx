@@ -43,16 +43,14 @@
 #endif
 
 #ifdef MAIN
-mem_putb (addr, value)
+static void mem_putb (addr, value)
 	u_int addr;
 	u_char value;
 {
 	printf ("mem_putb (%04x,%02x)", addr, value);
 }
 #else
-mem_putb (addr, value)
-	u_int addr;
-	u_char value;
+static void mem_putb (u_int addr, u_char value)
 {
 	/* Simulate we burn code into target EPROM */
 	extern u_char *ram;
@@ -75,10 +73,7 @@ mem_putb (addr, value)
  *
  *	nbytes = 13, addr=0xf000, csum = ~(0x13+0xF0+0x00+0xFF+...+0xE5)
  */
-static int
-load_line_s19 (buf, offset)
-	u_char *buf;
-	u_int offset;
+static int load_line_s19 (char *buf, u_int offset)
 {
 	int nbytes;	/* Must be int to be arg to scanf */
 	int val;
@@ -113,13 +108,13 @@ load_line_s19 (buf, offset)
 			sum = ~sum & 0xFF;
 			sscanf (&buf[8 + (i - 2) * 2], "%02x", &csum);
 			if (csum != sum) {
-				error ((void *)"Checksum: computed %02x, read: %02x\n", sum, csum);
+				error ("Checksum: computed %02x, read: %02x\n", sum, csum);
 				return -1;
 			}
 		} else if (c2 == '9' || c2 == '0') {
 			; /* OK - ignore */
 		} else {
-			error ((void *)"Invalid S19 file\n");
+			error ("Invalid S19 file\n");
 			return -1;
 		}
 	}
@@ -134,8 +129,7 @@ load_line_s19 (buf, offset)
  *
  * Returns 0 on success, < 0 on failure
  */
-load_file (filename)
-	char *filename;
+int load_file (char *filename)
 {
 	FILE *fp;
 	int errcode;

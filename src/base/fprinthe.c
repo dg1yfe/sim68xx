@@ -16,10 +16,7 @@ static char hexnum[] = {
 	'c', 'd', 'e', 'f'
 };
 
-fprinthex (fp, buf, len)
-	FILE		*fp;
-	unsigned char	*buf;
-	int		 len;
+void fprinthex (FILE *fp, unsigned char *buf, int len)
 {
 	int i, j;
 

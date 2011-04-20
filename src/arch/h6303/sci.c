@@ -9,7 +9,9 @@
 #include "cpu.h"
 #include "ireg.h"
 #include "sci.h"
-
+#include "error.h"
+#include "fprinthe.h"
+#include "io.h"
 
 /*
  * Pseudo-received data buffer used by rdr_getb() routines
@@ -27,9 +29,7 @@ static int	rxindex      = 0;	/* Index of first byte in recvbuf */
  *
  * increment number of outstanding rx interrupts
  */
-sci_in (s, nbytes)
-	u_char *s;
-	int nbytes;
+int sci_in (u_char *s, int nbytes)
 {
 	int i;
 
@@ -38,23 +38,24 @@ sci_in (s, nbytes)
 			recvbuf[rxinterrupts++] = s[i];
 		else
 			warning ("sci_in:: buffer full\n");
+	return 0;
 }
 
-sci_print ()
+int sci_print ()
 {
 	printf ("sci recvbuf:\n");
 	fprinthex (stdout, recvbuf + rxindex, rxinterrupts);
+	return 0;
 }
 
 
 /*
  * trcsr_getb - always return Transmit Data Reg. Empty = 1
  */
-trcsr_getb (offs)
-	u_int offs;
+int trcsr_getb (u_int offs)
 {
-	char c;
 #if 0
+	char c;
 	/*
 	 * Check if user has typed a key, prevent simulator overrun
 	 * if data in recvbuf, return RDRF
@@ -74,7 +75,7 @@ trcsr_getb (offs)
  *  Sets global interrupt flag if tx interrupt is enabled
  *  so main loop can execute interrupt vector
  */
-trcsr_putb (offs, value)
+int trcsr_putb (offs, value)
 	u_int  offs;
 	u_char value;
 {
@@ -91,6 +92,8 @@ trcsr_putb (offs, value)
 		txinterrupts = 1;
 	else
 		txinterrupts = 0;
+
+	return 0;
 }
 
 /*
@@ -100,7 +103,7 @@ trcsr_putb (offs, value)
  * decrement number of outstanding rx interrupts
  * Assume RIE is enabled.
  */
-rdr_getb (offs)
+int rdr_getb (offs)
 	u_int  offs;
 {
 	if (cpu_isrunning ()) {
@@ -128,9 +131,7 @@ rdr_getb (offs)
  * Sets global interrupt flag if Tx interrupt is enabled
  * to signalize main loop to execute sci interrupt vector
  */
-tdr_putb (offs, value)
-	u_int  offs;
-	u_char value;
+int tdr_putb (u_int  offs, u_char value)
 {
 	u_char trcsr;
 
@@ -143,5 +144,7 @@ tdr_putb (offs, value)
 	trcsr = trcsr_getb (TRCSR);
 	if (trcsr & TIE)
 		txinterrupts = 1;
+
+	return 0;
 }
 

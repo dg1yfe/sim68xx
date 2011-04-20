@@ -9,10 +9,11 @@
 #include "defs.h"
 #include "cpu.h"
 #include "reg.h"
+#include "instr.h"
 
 struct cpu cpu;
 
-cpu_reset ()
+void cpu_reset ()
 {
 	reset ();		/* chip specific reset */
 	cpu_setstackmin (cpu_getstackmin ());
@@ -23,9 +24,9 @@ cpu_reset ()
 	cpu_setstackmax (cpu_getstackmax () ? cpu_getstackmax () : 0x00FF);
 }
 
-cpu_print ()
+void cpu_print ()
 {
 	reg_printall ();
-	printf ("\t[%d]\n", cpu_getncycles ());
+	printf ("\t[%ld]\n", cpu_getncycles ());
 	instr_print (reg_getpc ());
 }

@@ -8,15 +8,15 @@
 # define _P(s) ()
 #endif
 
-extern int void _P(((int )));
-extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
-extern char *strerror _P((int strerror_r (int, char *, size_t )));
-extern int unassemble _P((unsigned int addr, int ninstr));
+//extern int void _P(((int )));
+//extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
+//extern char *strerror _P((int strerror_r (int, char *, size_t )));
+extern u_int unassemble _P((unsigned int addr, int ninstr));
 extern void sig_int_handler _P((int subcode));
-extern int split _P((char **cmd, char *buf, int *argc));
-extern int commandprompt _P((void));
-extern int commandinit _P((void));
-extern int print_help _P((void));
+extern void split _P((char **cmd, char *buf, int *argc));
+extern void commandprompt _P((void));
+extern void commandinit _P((void));
+extern void print_help _P((void));
 extern int command _P((unsigned char *buf));
 extern int commandloop _P((FILE *ifp));
 

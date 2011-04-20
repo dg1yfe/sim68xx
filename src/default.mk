@@ -15,9 +15,10 @@ RM	= rm -f
 
 # Linux, SunOS 4, Solaris 2.x, Win32, GNU CC, OS-X
 CC	= gcc
-CFLAGS	= -O0 -g  #-Wmissing-prototypes -Wall
+#CFLAGS	= -O0 -g  #-Wmissing-prototypes -Wall
 #CFLAGS = $(CFLAGS) -finline-functions
 #CFLAGS  = $(CFLAGS) -Wall
+CFLAGS  = -O0 -ggdb -Wall
 
 # SunOS 4, native cc
 #CC	= cc

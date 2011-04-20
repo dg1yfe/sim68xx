@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include "defs.h"
 #include "reg.h"
+#include "error.h"
 
 #ifdef USE_PROTOTYPES
 #include "symtab.h"
@@ -48,8 +49,7 @@ static struct {
 /*
  * Push a word on the subroutine stack (debug info) (previous pushsub)
  */
-callstack_push (addr)
-	u_int addr;
+void callstack_push (u_int addr)
 {
 	if (callstack.sp < MAXCALLSTACK) {
 		callstack.elements[callstack.sp].entry_point    = addr;
@@ -67,10 +67,9 @@ callstack_push (addr)
 /*
  * Pop a word from the subroutine stack (previous popsub)
  */
-callstack_pop ()
+u_int callstack_pop ()
 {
-        u_int addr;
-
+	u_int addr;
 
 	if (callstack.sp > 0) {
 		addr = callstack.elements[--callstack.sp].entry_point;
@@ -87,7 +86,7 @@ callstack_pop ()
 /*
  *  Peek the current subroutine address (peeksub)
  */
-callstack_peek_addr ()
+u_int callstack_peek_addr ()
 {
 	if (callstack.sp > 0)
 		return callstack.elements[callstack.sp - 1].entry_point;
@@ -98,7 +97,7 @@ callstack_peek_addr ()
 /*
  * Peek the cpu stack pointer on entry for the current subroutine
  */
-callstack_peek_stack ()
+u_int callstack_peek_stack ()
 {
 	if (callstack.sp > 0)
 		return callstack.elements[callstack.sp - 1].stack_on_entry;
@@ -109,7 +108,7 @@ callstack_peek_stack ()
 /*
  * Return number of subroutine elements (nsubs)
  */
-callstack_nelem ()
+u_int callstack_nelem ()
 {
 	return callstack.sp;
 }
@@ -117,7 +116,7 @@ callstack_nelem ()
 /*
  * callstack_print - print the call stack (previous printsubs)
  */
-callstack_print ()
+void callstack_print ()
 {
 	int   i;
 
@@ -127,13 +126,13 @@ callstack_print ()
 		char *p;
 
 		printf ("%04x", callstack.elements[i].entry_point);
-		if (p = sym_find_name (callstack.elements[i].entry_point))
+		if ((p = sym_find_name (callstack.elements[i].entry_point)))
 			printf ("\t%s", p);
 		putchar ('\n');
 	}
 }
 
-callstack_trace (on)
+u_int callstack_trace (on)
 	int on;
 {
 	return callstack.trace = on;

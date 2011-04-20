@@ -115,17 +115,14 @@ extern struct regs regs;
 #define reg_preincpc(value)	(regs.pc += value)
 #define reg_incpc(value)	(regs.pc += value)
 
-static
-reg_postincpc	(value)	{u_int pc = regs.pc; regs.pc += value; return pc;}
+extern u_int reg_postincpc(u_int value);
+extern u_int reg_postdecsp(u_int value);
+extern u_int reg_preincsp(u_int value);
+extern u_int reg_incsp(u_int value);
+extern int reg_cmd (int argc, char **argv);
+extern int reg_printall (void);
+extern int reg_setsp (u_int value);
 
-static
-reg_postdecsp	(value) {u_int sp = regs.sp; reg_setsp (sp - value); return sp;}
-
-static
-reg_preincsp	(value) {return reg_setsp (regs.sp + value);}
-
-static
-reg_incsp	(value) {return reg_setsp (regs.sp + value);}
 
 
 

@@ -18,9 +18,9 @@
 #endif
 
 #ifdef __STDC__
-  error (va_list format, ...)
+  void error (char * format, ...)
 #else
-  error (format, va_alist)
+  void error (format, va_alist)
         char      *format;
         va_dcl			/* int va_alist; */
 #endif
@@ -41,9 +41,9 @@
 
 
 #ifdef __STDC__
-  warning (va_list format, ...)
+  void warning (char * format, ...)
 #else
-  warning (format, va_alist)
+  void warning (format, va_alist)
         char      *format;
         va_dcl			/* int va_alist; */
 #endif

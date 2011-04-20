@@ -51,7 +51,8 @@ int tcsr1_putb (u_int offs, u_char value)
 {
 	u_char read_only = (ICF|OCF1|TOF);
 
-	ireg_putb (TCSR1, ireg_getb (TCSR1) & read_only | value & ~read_only);
+	ireg_putb (TCSR1, (ireg_getb (TCSR1) & read_only) | (value & ~read_only));
+	return 0;
 }
 
 
@@ -60,7 +61,8 @@ int tcsr2_putb (u_int offs, u_char value)
 {
 	u_char read_only = (ICF|OCF2|OCF1);
 
-	ireg_putb (TCSR, ireg_getb (TCSR) & read_only | value & ~read_only);
+	ireg_putb (TCSR, (ireg_getb (TCSR) & read_only) | (value & ~read_only));
+	return 0;
 }
 
 /*
@@ -80,6 +82,7 @@ int ocr1_putb (u_int offs, u_char value)
 		ireg_putb (TCSR1, ireg_getb (TCSR1) & ~OCF1);
 		tcsr_is_read = 0;
 	}
+	return 0;
 }
 
 
@@ -100,6 +103,7 @@ int ocr2_putb (u_int offs, u_char value)
 		ireg_putb (TCSR2, ireg_getb (TCSR2) & ~OCF2);
 		tcsr2_is_read = 0;
 	}
+	return 0;
 }
 
 
@@ -134,7 +138,6 @@ int t2cnt_get_prescale_bits(void)
 
 int t2cnt_putb (u_int offs, u_char value)
 {
-	int ps_bits;
 
 	ireg_putb (T2CNT, value);
 
@@ -214,4 +217,6 @@ int timer_inc (u_int ncycles)
 	}
 
 	ireg_putw (FRC, frc_new);
+
+	return 0;
 }

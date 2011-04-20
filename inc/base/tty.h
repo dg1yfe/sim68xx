@@ -8,7 +8,7 @@
 # define _P(s) ()
 #endif
 
-extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
+//extern FILE *fopen _P((int fprintf (FILE *, const char *, ...), int fputc (int, FILE *)));
 extern int tcdrain _P((int tcflow (int, int )));
 extern int tty_noblock _P((int fd, char *tty_orig));
 extern int tty_restore _P((int fd, char *tty));

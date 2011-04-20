@@ -43,12 +43,13 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "defs.h"
 
-#ifdef USE_PROTOTYPES
+#include "symtab.h"
+
 #include "fileio.h"
-#endif
 
 #ifdef __MSDOS__
   char *inifile = "sim.rc";
@@ -58,22 +59,23 @@
 
 char *progname;
 
-char *
-getprogname ()
+extern u_char *mem_init();
+extern int board_install();
+/*
+char * getprogname ()
 {
 	return progname;
 }
+*/
 
 
-
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
 	int   errcode;
 	FILE *ifp;
 	char *host;
 	int   port;
 	char  *filename;
-	char *p;
 
 	progname = argv[0];
 	filename = argv[1];
@@ -121,7 +123,7 @@ main (int argc, char *argv[])
 		char *p;
 		int   len;
 
-		if (p = strrchr (filename, '.')) {
+		if ((p = strrchr (filename, '.'))) {
 			/* Skip extension */
 			len = (p - filename);
 		} else {

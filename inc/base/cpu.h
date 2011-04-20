@@ -16,7 +16,7 @@ struct cpu {
 		unsigned min:16;
 		unsigned max:16;
 	} stack;
-	unsigned ncycles;
+	unsigned long ncycles;
 	enum cpu_states state;
 
 #if 0
@@ -63,7 +63,7 @@ extern struct cpu cpu;
 # define P_(s) ()
 #endif
 
-extern int cpu_reset P_((void));
-extern int cpu_print P_((void));
+extern void cpu_reset P_((void));
+extern void cpu_print P_((void));
 
 #endif /* CPU_H */

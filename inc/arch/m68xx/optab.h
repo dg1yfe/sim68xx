@@ -11,7 +11,7 @@ struct opcode {
 	u_char		op_n_opcodes;	/* Number of opcode bytes	*/
 #endif
 	u_char		op_n_operands;	/* No. of bytes in operand	*/
-	int		(*op_func)();	/* Func that "executes" opcode	*/
+	void		(*op_func)();	/* Func that "executes" opcode	*/
 	u_char		op_n_cycles;	/* No. of clock cycles		*/
 	char		*op_mnemonic;	/* Printout format string	*/
 #ifdef M6811

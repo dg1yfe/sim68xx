@@ -10,26 +10,27 @@
 
 #include "defs.h"
 #include <string.h>
+#include "error.h"
+
 #ifdef HAS_TERMIO
 
 #include <stdio.h>
 #include <termios.h>		/* linux/SCO/SunOS */
+#include <unistd.h>
 
 /*
  * noblock - set tty in echo, nostrip, non-blocking mode
  *
  * return original tty mode in 'tty_orig'
  */
-tty_noblock (fd, tty_orig)
-	int   fd;
-	char *tty_orig;
+int tty_noblock (int   fd, char *tty_orig)
 {
 	struct termios tty_curr;
 
 	if (!isatty (fd))
 		return -1;
 	if (tcgetattr (fd, (struct termios *) tty_orig) < 0)
-		error ("tcgetattr (tty_orig)");
+		error ( "tcgetattr (tty_orig)");
 
 	memcpy (&tty_curr, tty_orig, sizeof (tty_curr));
 
@@ -39,24 +40,22 @@ tty_noblock (fd, tty_orig)
 	tty_curr.c_cc[VTIME]  = 0;	/* Block max. 0 seconds */
 
 	if (tcsetattr (fd, TCSANOW, &tty_curr) < 0)
-		error ("tcsetattr(TCSANOW,tty_curr)");
+		error ( "tcsetattr(TCSANOW,tty_curr)");
 #if 0
  	if (tcsetattr (0, TCSAFLUSH, &tty_curr) < 0)
- 		error ("tcsetattr(tty_curr)");
+ 		error ( "tcsetattr(tty_curr)");
 #endif
 	return 0;
 }
 
 
-tty_restore (fd, tty)
-	int   fd;
-	char *tty;
+int tty_restore (int fd, char *tty)
 {
 	if (!isatty (fd))
 		return -1;
 
 	if (tcsetattr (fd, TCSANOW, (struct termios *) tty) < 0)
-		error ("tcsetattr(TCSANOW,tty_curr)");
+		error ((void *)"tcsetattr(TCSANOW,tty_curr)");
 #if 0
  	if (tcsetattr (0, TCSAFLUSH, tty) < 0)
  		error ("tcsetattr(tty)");
@@ -68,8 +67,7 @@ tty_restore (fd, tty)
 /*
  * tty_getkey - get a key (0..255) if pressed, else -1
  */
-tty_getkey (fd)
-	int fd;
+int tty_getkey (int fd)
 {
 	u_char c;
 

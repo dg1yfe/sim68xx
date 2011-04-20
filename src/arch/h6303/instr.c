@@ -1,7 +1,30 @@
-/* <<<                                  */
-/* Copyright (c) 1994-1996 Arne Riiber. */
-/* All rights reserved.                 */
-/* >>>                                  */
+ /*
+  *
+  * Sim68xx - 68xx/63xx CPU Simulator
+  *
+  * instr.c - Instruction decoding and execution (6303)
+  *
+     Copyright (C) 2011 Felix Erckenbrecht
+     <dg1yfe at gmx.de>
+
+     Copyright (C) 1994 - 1996  Arne Riiber
+     <riiber at systek.no>
+
+     This program is free software; you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation; either version 2 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  *
+*/
 #include <assert.h>
 #include <stdio.h>
 
@@ -15,6 +38,7 @@
 #include "sci.h"
 #include "timer.h"
 #include "symtab.h"
+#include "opfunc.h"
 
 #ifdef USE_PROTOTYPES
 #include "instr.h"
@@ -24,7 +48,7 @@
 /*
  *  reset - jump to the reset vector
  */
-reset ()
+void reset ()
 {
 	reg_setpc (mem_getw (RESVECTOR));
 	reg_setiflag (1);
@@ -34,7 +58,7 @@ reset ()
 /*
  * instr_exec - execute an instruction
  */
-instr_exec ()
+int instr_exec ()
 {
 	/*
 	 * Get opcode from memory,
@@ -92,7 +116,7 @@ instr_exec ()
 /*
  * instr_print - print (unassemble) an instruction
  */
-instr_print (u_int addr)
+u_int instr_print (u_int addr)
 {
 	u_short		 pc	= addr;
 	u_char		 op	= mem_getb (pc);
@@ -110,17 +134,25 @@ instr_print (u_int addr)
 	{
 		case 0:	// Immediate
 		{
-			printf ("%02x %02x\t\t",  mem_getb (pc), mem_getb (pc+1));
-//			printf ("%02x\t\t",  mem_getb (pc));
-			printf (opptr->op_mnemonic, mem_getb (pc + 1));
+			if (opptr->op_n_operands == 1)
+			{
+				printf ("%02x %02x\t\t",  mem_getb (pc), mem_getb (pc+1));
+				printf (opptr->op_mnemonic, mem_getb (pc + 1));
+			}
+			else
+			{
+				printf ("%02x %02x %02x\t",  mem_getb (pc),
+						mem_getb (pc+1), mem_getb (pc+2));
+				printf (opptr->op_mnemonic, mem_getw (pc + 1));
+			}
 			break;
 		}
 		case 1: // Direct
 		{
 			printf ("%02x %02x\t\t",  mem_getb (pc), mem_getb (pc+1));
 			printf (opptr->op_mnemonic, mem_getb (pc + 1));
-			if (symname = sym_find_name (mem_getb (pc + 1)))
-				printf ("\t%s", symname);
+			if ((symname = sym_find_name (mem_getb (pc + 1))))
+				printf ("\t\t%s", symname);
 			break;
 		}
 		case 2: // Extended
@@ -128,7 +160,7 @@ instr_print (u_int addr)
 			printf ("%02x %02x %02x\t", mem_getb (pc),
 					mem_getb (pc + 1), mem_getb (pc + 2));
 			printf (opptr->op_mnemonic, mem_getw (pc + 1));
-			if (symname = sym_find_name (mem_getw (pc + 1)))
+			if ((symname = sym_find_name (mem_getw (pc + 1))))
 				printf ("\t%s", symname);
 			break;
 		}
@@ -136,7 +168,7 @@ instr_print (u_int addr)
 		{
 			printf ("%02x %02x\t\t",  mem_getb (pc), mem_getb (pc+1));
 			printf (opptr->op_mnemonic, mem_getb (pc + 1));
-			if (symname = sym_find_name (reg_getix() + mem_getb (pc + 1)))
+			if ((symname = sym_find_name (reg_getix() + mem_getb (pc + 1))))
 				printf ("\t%s", symname);
 			break;
 		}
@@ -152,7 +184,7 @@ instr_print (u_int addr)
 
 			printf ("%02x %02x\t\t",  mem_getb (pc), mem_getb (pc+1));
 			printf (opptr->op_mnemonic, mem_getb (pc + 1));
-			if (symname = sym_find_name (pc + offset))
+			if ((symname = sym_find_name (pc + offset)))
 				printf ("\t%s", symname);
 			break;
 		}
@@ -161,7 +193,7 @@ instr_print (u_int addr)
 			printf ("%02x %02x %02x\t", mem_getb (pc),
 					mem_getb (pc + 1), mem_getb (pc + 2));
 			printf (opptr->op_mnemonic, mem_getb (pc + 1), mem_getb(pc + 2));
-			if (symname = sym_find_name (mem_getb (pc + 2)))
+			if ((symname = sym_find_name (mem_getb (pc + 2))))
 				printf ("\t%s", symname);
 			break;
 		}
@@ -170,7 +202,7 @@ instr_print (u_int addr)
 			printf ("%02x %02x %02x\t", mem_getb (pc),
 					mem_getb (pc + 1), mem_getb (pc + 2));
 			printf (opptr->op_mnemonic, mem_getb (pc + 1), mem_getb(pc + 2));
-			if (symname = sym_find_name (reg_getix() + mem_getb (pc + 2)))
+			if ((symname = sym_find_name (reg_getix() + mem_getb (pc + 2))))
 				printf ("\t%s", symname);
 			break;
 		}

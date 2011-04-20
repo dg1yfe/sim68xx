@@ -37,11 +37,16 @@
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "defs.h"
 #include "cpu.h"
 #include "memory.h"
 #include "reg.h"
+#include "instr.h"
+#include "tty.h"
+#include "callstac.h"
+#include "io.h"
 
 #ifdef USE_PROTOTYPES
 #include "symtab.h"
@@ -65,9 +70,7 @@ static int     usr_int = 0;	/* Set to 1 by signal handler */
  *
  * returns the new address to unassemble
  */
-unassemble (addr, ninstr)
-	u_int addr;
-	int ninstr;
+u_int unassemble (u_int addr, int ninstr)
 {
 	int i;
 
@@ -80,7 +83,7 @@ unassemble (addr, ninstr)
 /*
  * list_breaks - list active breakpoints
  */
-static list_breaks (char *breaks)
+static void list_breaks (u_char *breaks)
 {
 	int i;
 	int n_breaks = 0;
@@ -102,7 +105,7 @@ static list_breaks (char *breaks)
 /*
  *  set_break - set or clear breakpoint at the given address
  */
-static set_break (char *breaks, u_int addr, int count)
+static void set_break (u_char *breaks, u_int addr, int count)
 {
 	char *p;
 
@@ -128,11 +131,11 @@ void sig_int_handler (int subcode)
 /*
  * split - split 'buf' into strings 'cmd[0..MAXARGS-1]'
  */
-split (	char **cmd, char  *buf, int   *argc)
+void split (	char **cmd, char  *buf, int   *argc)
 {
 	int i = 0;
 
-	if (cmd[0] = strtok (buf, " \t\r\n"))
+	if ((cmd[0] = strtok (buf, " \t\r\n")))
 	{
 		for (i = 1; i < *argc; i++)
 			if (!(cmd[i] = strtok (NULL," \t\r\n")))
@@ -145,7 +148,7 @@ split (	char **cmd, char  *buf, int   *argc)
 /*
  * commandprompt - display command prompt
  */
-commandprompt ()
+void commandprompt ()
 {
 	putchar ('\n');
 	putchar ('>');
@@ -156,7 +159,7 @@ commandprompt ()
 /*
  * commandinit - initialize command variables
  */
-commandinit ()
+void commandinit ()
 {
 	static int command_initiated = FALSE;
 
@@ -175,9 +178,9 @@ commandinit ()
  * command_install - install a command handler func (argc, argv)
  *
  */
-static (*ext_cmd)() = NULL;
+static int (*ext_cmd)() = NULL;
 
-command_install (int (*func)())
+void command_install (int (*func)())
 /* func (int argc, char **argv) */
 {
 	ext_cmd = func;
@@ -212,7 +215,7 @@ static char *helptext[] = {
 };
 
 
-print_help ()
+void print_help ()
 {
 	int i;
 
@@ -225,7 +228,7 @@ print_help ()
  *
  * Returns 0 when the quit command is given, else 1.
  */
-command (u_char *buf)
+int command (u_char *buf)
 {
 	int		argc;
 	char		*argv[MAXARGS];	/* at least 3 */
@@ -234,19 +237,20 @@ command (u_char *buf)
 	static int	trace_function_calls = 0;
 	static int	last_cmd;
 	int		new_cmd;
-	int		i;
-	char		tty[MAXBUFSIZE];
+	unsigned int i;
+	char	tty[MAXBUFSIZE];
 	int		n_instr;
-	int		io_poll_limit = 50; /* Poll IO each 50'th instr */
+	int		io_poll_limit = 500; /* Poll IO each 500'th instr */
+	unsigned int pc_old = 0;
 
 	if (*buf == '!')	/* Don't split buf into zero-terminated strings */
 	{
-		system (buf + 1);
+		system ((char *) buf + 1);
 		return 1;
 	}
 
 	argc = MAXARGS;
-	split (argv, buf, &argc);
+	split (argv, (char *) buf, &argc);
 
 	/* Get new or use last command */
 	new_cmd = (argc > 0) ? *argv[0] : last_cmd;
@@ -344,7 +348,7 @@ command (u_char *buf)
 		}
 		cpu_start ();
 #ifdef HAS_TERMIO
-		tty_noblock (0, &tty);
+		tty_noblock (0, (char *) tty);
 #endif
 		nerrors = 0;
 		n_instr = 0;
@@ -361,18 +365,16 @@ command (u_char *buf)
 		 * is nonzero.
 		 *
 		 */
-		{
-			u_int pc_old = reg_getpc ();
+		pc_old = reg_getpc ();
 
-			instr_exec ();
+		instr_exec ();
 
-			/*
-			 * Was it a breakpoint at old program counter?
-			 * If yes, clear it, so we don't stop.
-			 */
-			if (break_flag && break_addr == pc_old) {
-				break_flag = 0;
-			}
+		/*
+		 * Was it a breakpoint at old program counter?
+		 * If yes, clear it, so we don't stop.
+		 */
+		if (break_flag && break_addr == pc_old) {
+			break_flag = 0;
 		}
 
 		while (!usr_int && !breaks[reg_getpc ()] && !break_flag && !(break_on_err && nerrors))
@@ -385,6 +387,7 @@ command (u_char *buf)
 				io_poll ();
 				n_instr = 0;
 			}
+			pc_old = reg_getpc ();
 			instr_exec ();
 
 #ifdef __MSDOS__
@@ -399,14 +402,16 @@ command (u_char *buf)
 
 		cpu_stop ();
 #ifdef HAS_TERMIO
-		tty_restore (0, &tty);
+		tty_restore (0, (char *)tty);
 #endif
 		if (usr_int)
 			printf ("Interrupted!\n");
 		else if (breaks [reg_getpc ()])
 			printf ("Breakpoint before code execution, address %04x!\n", reg_getpc ());
 		else if (break_flag)
+		{
 			printf ("Breakpoint after data access, address %04x!\n", break_addr);
+		}
 
 		usr_int = 0;
 		{
@@ -416,7 +421,21 @@ command (u_char *buf)
 		}
 		/* reg_printall (); */
 		/* unassemble (unasm_addr = reg_getpc (), 10); */
-		cpu_print ();
+		if(break_flag && !(breaks[reg_getpc()]))
+		{	// on data breakpoint
+			unsigned int pc = reg_getpc();
+			// rewind pc to show instruction which caused break
+			reg_setpc(pc_old);
+			cpu_print();
+			// forward PC to original value
+			reg_setpc(pc);
+			// print current instruction
+			instr_print (pc);
+		}
+		else
+		{
+			cpu_print ();
+		}
 		break;
 
 	case 'l':		/* List symbol(s) */
@@ -430,7 +449,7 @@ command (u_char *buf)
 			for (i = 0; i < MEMSIZE; i++)
 			{
 				char *symname;
-				if (symname = sym_find_name (i))
+				if ((symname = sym_find_name (i)))
 					printf ("%04x\t%s\n", i, symname);
 			}
 		}
@@ -463,7 +482,7 @@ command (u_char *buf)
 				else if (sscanf (argv[i], "\"%s\"", buf) == 1)
 				{
 					int j;
-					for (j = 0; j < strlen (buf); j++)
+					for (j = 0; j < strlen ((char *)buf); j++)
 						mem_putb (dump_addr++, buf[j]);
 				}
 			}
@@ -486,7 +505,7 @@ command (u_char *buf)
 		{
 			u_int ret_sp = reg_getsp ();
 
-			tty_noblock (0, &tty);
+			tty_noblock (0, (char *)tty);
 			cpu_start ();
 			/* n_instr = 0; // possibly several 'step' in sequence */
 			do
@@ -499,7 +518,7 @@ command (u_char *buf)
 			}
 			while (reg_getsp () < ret_sp);
 			cpu_stop ();
-			tty_restore (0, &tty);
+			tty_restore (0, (char *) tty);
 
 		}
 		cpu_print ();
@@ -577,7 +596,7 @@ command (u_char *buf)
 /*
  * commandloop - execute command loop
  */
-commandloop (FILE *ifp)
+int commandloop (FILE *ifp)
 {
 	char buf[MAXBUFSIZE];
 
@@ -590,7 +609,9 @@ commandloop (FILE *ifp)
 		if (fgets (buf, MAXBUFSIZE, ifp) == NULL)
 			return ferror (ifp);
 
-	} while (command (buf));
+	} while (command ((u_char *) buf));
+
+	return 0;
 }
 
 

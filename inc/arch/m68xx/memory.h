@@ -17,6 +17,7 @@
 #include "defs.h"		/* general definitions */
 #include "chip.h"		/* chip specific: NIREGS */
 #include "ireg.h"		/* chip specific: ireg_getb/putb_func[], ireg_start/end */
+#include "error.h"
 
 #define MEMSIZE 65536		/* Size of ram and breakpoint arrays */
 
@@ -39,84 +40,16 @@ extern u_char  *ram;		/* Physical storage for simulated RAM */
  * There is currently no breaks_start and breaks_end variables,
  * so another start value than 0 will not work.
  */
+extern int		watchs[MEMSIZE];	/* storage for watchpoints */
 extern u_char *breaks;		/* Physical storage for breakpoints */
 extern int    break_flag;	/* Non-zero if an address containing a
 				   breakpoint has been accessed by mem_xxx */
 extern u_int  break_addr;	/* Last breakpoint address accessed */
 
-
-/*
- *  mem_getb - called to get a byte from an address
- */
-
-
-static u_char mem_getb (u_int addr)
-{
-	int offs = addr - ireg_start;
-
-	if (breaks[addr]) {
-		break_flag = 1; /* Signal execution loop to stop */
-		break_addr = addr;
-	}
-
-	if (offs >= 0 && offs < NIREGS) {
-		if (ireg_getb_func[offs])
-			return (*ireg_getb_func[offs])(offs);
-		else
-			return iram[offs];
-	} else if (addr >= ram_start && addr <= ram_end) {
-		return ram[addr];
-	} else {
-		error ("mem_getb: addr=%04x, subroutine %04x\n",
-			addr, callstack_peek_addr ());
-		return 0;
-	}
-}
-
-
-
-static u_int mem_getw (u_int addr)
-{
-	/* Make sure hi byte is accessed first */
-	u_char hi = mem_getb (addr);
-	u_char lo = mem_getb (addr + 1);
-	return (hi << 8) | lo;
-}
-
-/*
- * mem_putb - called to write a byte to an address
- */
-
-
-static void mem_putb (u_int addr, u_char value)
-{
-	int offs = addr - ireg_start; /* Address of on-chip memory */
-
-	if (breaks[addr]) {
-		break_flag = 1; /* Signal execution loop to stop */
-		break_addr = addr;
-	}
-
-	if (offs >= 0 && offs < NIREGS) {
-		if (ireg_putb_func[offs])
-			(*ireg_putb_func[offs])(offs, value);
-		else
-			iram [offs] = value;
-	} else if (addr >= ram_start && addr <= ram_end) {
-		ram [addr] = value;
-	} else {
-		error ("mem_putb: addr=%04x, subroutine %04x\n",
-			addr, callstack_peek_addr ());
-	}
-}
-
-
-
-static void mem_putw (u_int addr, u_int value)
-{
-	mem_putb (addr, value >> 8);		/* hi byte */
-	mem_putb (addr + 1, value & 0xFF);	/* lo byte */
-}
+extern u_char mem_getb (u_int addr);
+extern u_int mem_getw (u_int addr);
+extern void mem_putb (u_int addr, u_char value);
+extern void mem_putw (u_int addr, u_int value);
 
 #if defined(__STDC__) || defined(__cplusplus)
 # define P_(s) s
@@ -127,7 +60,7 @@ static void mem_putw (u_int addr, u_int value)
 
 /* memory.c */
 extern u_char *mem_init        P_(());
-extern int     mem_print_ascii P_((u_int startaddr, u_int nbytes));
+extern void    mem_print_ascii P_((u_int startaddr, u_int nbytes));
 extern int     mem_print       P_((u_int startaddr, u_int nbytes, u_int nperline));
 
 #undef P_

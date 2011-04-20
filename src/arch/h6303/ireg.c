@@ -26,15 +26,11 @@ u_char	iram[NIREGS];
 # define P_(s) ()
 #endif
 
-static port_putb P_((u_int offs, u_char value));
-
-static
-port_putb (offs, value)
-	u_int  offs;
-	u_char value;
+static int port_putb (u_int offs, u_char value)
 {
 	/* Only change output ports - xor with DDR */
 	ireg_putb (offs, value ^ ireg_getb (offs - 2));
+	return 0;
 }
 
 /*
