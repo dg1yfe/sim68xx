@@ -176,15 +176,19 @@ int timer_inc (u_int ncycles)
 
 	/*
 	 * Check against timer compare registers
+	 * only trigger if compare match condition occurred
+	 * during the last instruction
 	 */
 	ocr1 = ireg_getw (OCR1);
-	if (frc_new >= ocr1) {
+	if ((frc_new >= ocr1) && (frc_old < ocr1))
+	{
 		ireg_putb (TCSR1, ireg_getb (TCSR1) | OCF1);
 		tcsr_is_read = 0;
 	}
 
 	ocr2 = ireg_getw (OCR2);
-	if (frc_new >= ocr2) {
+	if ((frc_new >= ocr2) && (frc_old < ocr2))
+	{
 		ireg_putb (TCSR2, ireg_getb (TCSR2) | OCF2);
 		tcsr2_is_read = 0;
 	}
@@ -207,7 +211,7 @@ int timer_inc (u_int ncycles)
 
 		tconr = ireg_getb(TCONR);
 
-		if (t2cnt_new >= tconr) {
+		if ((t2cnt_new >= tconr) && (t2cnt_old < tconr)) {
 			t2cnt_new -= tconr;
 			ireg_putb (TCSR3, ireg_getb (TCSR3) | CMF);
 			tcsr2_is_read = 0;

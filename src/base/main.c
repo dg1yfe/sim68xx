@@ -44,12 +44,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "defs.h"
 
 #include "symtab.h"
 
 #include "fileio.h"
+#include "command.h"
 
 char *inifile = ".simrc";
 char *progname;
@@ -134,12 +136,14 @@ int main (int argc, char *argv[])
 	/*
 	 * read commands from init file
 	 */
-	if (ifp || (ifp = fopen (inifile, "rt"))) {
-		commandloop (ifp, host, port);
-		close (ifp);
+	if (ifp || (ifp = fopen (inifile, "rt")))
+	{
+//		commandloop (ifp, host, port);
+		commandloop (ifp);
+		fclose (ifp);
 	}
-
-	return commandloop (stdin, host, port);
+//	return commandloop (stdin, host, port);
+	return commandloop (stdin);
 }
 
 

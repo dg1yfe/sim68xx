@@ -50,10 +50,13 @@ instr_exec ()
 		/*
 		 * Check for interrupts in priority order
 		 */
-		if ((ireg_getb (TCSR) & OCF) && (ireg_getb (TCSR) & EOCI)) {
+		if ((ireg_getb (TCSR) & OCF) && (ireg_getb (TCSR) & EOCI))
+		{
 			int_addr (OCFVECTOR);
 			interrupted = 1;
-		} else if (serial_int ()) {
+		}
+		else if (serial_int ())
+		{
 			int_addr (SCIVECTOR);
 			interrupted = 1;
 		}

@@ -485,6 +485,8 @@ int command (u_char *buf)
 
 	case 's':	/* step over subroutines */
 		{
+			int interrupted;
+
 			u_int ret_sp = reg_getsp ();
 
 			tty_noblock (0, (char *)tty);
@@ -492,13 +494,15 @@ int command (u_char *buf)
 			/* n_instr = 0; // possibly several 'step' in sequence */
 			do
 			{
+
 				if (++n_instr > io_poll_limit) {
 					io_poll ();
 					n_instr = 0;
 				}
-				instr_exec ();
+				interrupted = instr_exec ();
 			}
-			while ((reg_getsp () < ret_sp) && (usr_int == 0));
+			while ((reg_getsp () < ret_sp) && (usr_int == 0) && (interrupted==0));
+
 			if (usr_int)
 			{
 				printf ("Interrupted!\n");
@@ -595,7 +599,6 @@ int commandloop (FILE *ifp)
 
 		if (fgets (buf, MAXBUFSIZE, ifp) == NULL)
 			return ferror (ifp);
-
 	} while (command ((u_char *) buf));
 
 	return 0;

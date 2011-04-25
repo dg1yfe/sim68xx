@@ -7,6 +7,9 @@
 # define P_(s) ()
 #endif
 
+#if defined(H6303)
+extern u_int rti_pc;
+#endif
 
 extern void reset P_((void));
 extern int instr_exec P_((void));

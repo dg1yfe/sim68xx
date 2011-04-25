@@ -44,6 +44,7 @@
 #include "instr.h"
 #endif
 
+u_int rti_pc=0;
 
 /*
  *  reset - jump to the reset vector
@@ -71,13 +72,46 @@ int instr_exec ()
 #ifndef M6800
 	if (!reg_getiflag ())
 	{
+		u_char tcsr_reg, tcsr2_reg;
 		/*
 		 * Check for interrupts in priority order
+		 *
+		 * Reset
+		 * Trap
+		 * NMI
+		 * SWI
+		 * /IRQ1
+		 * ICI
+		 * OCI (Timer 1, 1&2 Compare Match)
+		 * TOI (Timer 1, Overflow)
+		 * CMI (Timer 2, Compare Match)
+		 * /IRQ2
+		 * SIO
+		 *
 		 */
-		if ((ireg_getb (TCSR) & OCF1) && (ireg_getb (TCSR) & EOCI1)) {
+		tcsr_reg = ireg_getb (TCSR);
+		tcsr2_reg = ireg_getb (TCSR2);
+		if ((tcsr_reg & ICF) && (tcsr_reg & EICI))
+		{
+			int_addr (ICFVECTOR);
+			interrupted = 1;
+		}
+		else
+		if (((tcsr_reg & OCF1) && (tcsr_reg & EOCI1)) ||
+			((tcsr2_reg & OCF2) && (tcsr2_reg & EOCI2)))
+		{
 			int_addr (OCFVECTOR);
 			interrupted = 1;
-		} else if (serial_int ()) {
+		}
+		else
+		if ((tcsr_reg & TOF) && (tcsr_reg & ETOI))
+		{
+			int_addr (TOFVECTOR);
+			interrupted = 1;
+		}
+		else
+		if (serial_int ())
+		{
 			int_addr (SCIVECTOR);
 			interrupted = 1;
 		}
@@ -104,11 +138,19 @@ int instr_exec ()
 		opptr = &opcodetab [mem_getb (reg_getpc ())];
 		reg_incpc (1);
 		(*opptr->op_func) ();
+		// check for SWI
+		if (opptr->op_value == 0x3f)
+		{
+			interrupted = 1;
+		}
 	}
+
+	if(interrupted)
+		printf("Interrupt : %04x \t %s\n", reg_getpc(), sym_find_name(reg_getpc()));
 
 	cpu_setncycles (cpu_getncycles () + opptr->op_n_cycles);
 	timer_inc (opptr->op_n_cycles);
-	return 0;
+	return interrupted;
 }
 
 
