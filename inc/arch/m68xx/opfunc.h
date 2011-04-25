@@ -8,6 +8,10 @@
 # define _P(s) ()
 #endif
 
+#if defined(H6303)
+extern u_int rti_pc;
+#endif
+
 /* Headers for ../../src/arch/m68xx/opfunc.c */
 extern int getaddr_dir _P((void));
 extern int getaddr_ext _P((void));

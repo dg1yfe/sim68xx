@@ -36,6 +36,7 @@
 /* opfunc.c - functions that execute Motorola 6800 instructions */
 /*====================================================================*/
 
+u_int rti_pc=0;
 /*
  *	Space-savers
  */
@@ -120,6 +121,8 @@ void tst_addr (addr)		{alu_testbyte (mem_getb (addr));}
  */
 void int_addr (u_int addr)
 {
+	rti_pc = reg_getpc();
+
 	pushword (reg_getpc ());
 	pushword (reg_getix());
 	pushbyte (reg_getacca ());

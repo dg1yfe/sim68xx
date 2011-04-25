@@ -44,7 +44,6 @@
 #include "instr.h"
 #endif
 
-u_int rti_pc=0;
 
 /*
  *  reset - jump to the reset vector
@@ -93,6 +92,7 @@ int instr_exec ()
 		tcsr2_reg = ireg_getb (TCSR2);
 		if ((tcsr_reg & ICF) && (tcsr_reg & EICI))
 		{
+			rti_pc = reg_getpc();
 			int_addr (ICFVECTOR);
 			interrupted = 1;
 		}
@@ -100,12 +100,14 @@ int instr_exec ()
 		if (((tcsr_reg & OCF1) && (tcsr_reg & EOCI1)) ||
 			((tcsr2_reg & OCF2) && (tcsr2_reg & EOCI2)))
 		{
+			rti_pc = reg_getpc();
 			int_addr (OCFVECTOR);
 			interrupted = 1;
 		}
 		else
 		if ((tcsr_reg & TOF) && (tcsr_reg & ETOI))
 		{
+			rti_pc = reg_getpc();
 			int_addr (TOFVECTOR);
 			interrupted = 1;
 		}
@@ -136,13 +138,23 @@ int instr_exec ()
 	else
 	{
 		opptr = &opcodetab [mem_getb (reg_getpc ())];
-		reg_incpc (1);
 		(*opptr->op_func) ();
 		// check for SWI
 		if (opptr->op_value == 0x3f)
 		{
+			rti_pc = reg_getpc();
 			interrupted = 1;
 		}
+		// check for RTI
+		if(opptr->op_value == 0x3b)
+		{
+			if (reg_getpc() != rti_pc )
+			{
+				printf("RTI Address (%04x) does not match IRQ entry address (%04x)\n", reg_getpc(), rti_pc);
+				printf("(%s / %s)\n", sym_find_name(reg_getpc()), sym_find_name(rti_pc));
+			}
+		}
+		reg_incpc (1);
 	}
 
 	if(interrupted)
