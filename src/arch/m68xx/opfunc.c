@@ -37,6 +37,7 @@
 /*====================================================================*/
 
 u_int rti_pc=0;
+u_int call_level=0;
 /*
  *	Space-savers
  */
@@ -103,7 +104,8 @@ void jsr_addr (addr)
 {
 	pushword (reg_getpc ());	/* Return address */
 	reg_setpc (addr);
-	callstack_push (addr);	/* subroutine ref. */
+	callstack_push (addr);		/* subroutine ref. */
+	call_level++;
 }
 void inc_addr (addr)		{mem_putb (addr, alu_incbyte (mem_getb (addr))); }
 void lsl_addr (addr)		{mem_putb (addr, alu_shlbyte (mem_getb (addr), 0));}
@@ -353,8 +355,13 @@ void rti_inh ()
 	reg_setacca (popbyte ());
 	reg_setix   (popword ());
 	reg_setpc   (popword ());
+	call_level--;
 }
-void rts_inh ()	{reg_setpc (popword ());}
+void rts_inh ()
+{
+	reg_setpc (popword ());
+	call_level--;
+}
 void sba_inh ()	{reg_setacca (alu_subbyte (reg_getacca (), reg_getaccb (), 0));}
 void sbca_imm ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_imm (), C));}
 void sbca_dir ()	{reg_setacca (alu_subbyte (reg_getacca (), getbyte_dir (), C));}

@@ -41,7 +41,7 @@ int (*ireg_getb_func[NIREGS]) P_((u_int offs)) = {
 	0,          0,          0,          0,
 	0,          0,          0,          0,
 	tcsr1_getb,  0,          0,          0,
-	0,          0,          0,          0,
+	0,          0,          0,  tcsr2_getb,
 /* 0x10 */
 	0,          trcsr_getb, rdr_getb,   0,
 	0,			0,			 0,			  0,
@@ -59,7 +59,7 @@ int (*ireg_putb_func[NIREGS]) P_((u_int offs, u_char val)) = {
 	0,          0,          port_putb,   port_putb,
 	0,          0,          port_putb,   port_putb,
 	tcsr1_putb,  0,          0,           ocr1_putb,
-	ocr1_putb,   0,          0,           0,
+	ocr1_putb,   0,          0,           tcsr2_putb,
 /* 0x10 */
 	0,          trcsr_putb,	 0,           tdr_putb,
 	0,			0,			 0,			  0,

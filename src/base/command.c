@@ -38,6 +38,7 @@
 #include "tty.h"
 #include "callstac.h"
 #include "io.h"
+#include "opfunc.h"
 
 #ifdef USE_PROTOTYPES
 #include "symtab.h"
@@ -482,6 +483,37 @@ int command (u_char *buf)
 		commandinit ();
 		break;
 
+	case 'e':	/* return from subroutine - execute until next rti/rts */
+		{
+			u_int cl;
+
+			cl = call_level;
+
+			tty_noblock (0, (char *)tty);
+			cpu_start ();
+			/* n_instr = 0; // possibly several 'step' in sequence */
+			do
+			{
+
+				if (++n_instr > io_poll_limit) {
+					io_poll ();
+					n_instr = 0;
+				}
+				instr_exec ();
+			}
+			while ((call_level>=cl) && (usr_int == 0));
+
+			if (usr_int)
+			{
+				printf ("Interrupted!\n");
+				usr_int = 0;
+			}
+			cpu_stop ();
+			tty_restore (0, (char *) tty);
+
+		}
+		cpu_print ();
+		break;
 
 	case 's':	/* step over subroutines */
 		{
