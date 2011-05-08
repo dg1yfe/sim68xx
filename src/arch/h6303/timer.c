@@ -33,13 +33,17 @@ int tcsr1_getb (u_int offs)
 
 int tcsr2_getb (u_int offs)
 {
-	int tcsr1;
 	int tcsr2;
 
-	if ((tcsr2 = ireg_getb (TCSR2)) & OCF2)
+	// OCF1 and ICF are readable in TCSR1 and TCSR2
+	tcsr2 = ireg_getb (TCSR2);
+	tcsr2 &= ~(OCF1 | ICF);							// ignore Bit 6 & 7 in TCSR2 location
+	tcsr2 |= (ireg_getb (TCSR1) & (OCF1 | ICF));	// instead fill with Bit 6 & 7 from TCSR1
+
+	if (tcsr2 & OCF2)
 		tcsr2_is_read = 1;
 
-	if ((tcsr1 = ireg_getb (TCSR2)) & OCF1)
+	if (tcsr2 & OCF1)
 		tcsr_is_read = 1;
 
 	return tcsr2;
