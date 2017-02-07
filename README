@@ -17,6 +17,14 @@ Change log:
 
 Archive name	Date and News
 
+sim68xx-2011.01 May 08 2011 (and before -> see Git History)
+		Make code compile on OS-X
+		Add HD6303 target
+		Extend OPTAB for 6303 to include more adressing modes
+		Removed support for MSDOS
+		Include all missing interrupt sources for 6303 (OCF2, CMI, TOF, ICI)
+		Include warning if return address changed during ISR
+
 sim68xx-0.9.9	May 02 2004
 		Fixes for 6811 disassembling after bug report from bkolby@c2i.net
 		- Corrected disasm INY/DEY (was "-")
