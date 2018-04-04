@@ -1,5 +1,11 @@
 sim68xx - simulator for the 6800/6801/6303/6805/6811 family.
 
+Developed by Arne Riiber (1994 - 2004) <riiber at systek.no>
+Some additions, patches and H6303 architecture by Felix Erckenbrecht (2011) <dg1yfe at gmx.de>
+
+An archived version of the projetcs original homepage is available at
+http://www.oocities.org/thetropics/harbor/8707/simulator/sim68xx/
+
 Directory structure:
 
 src	Source files (*.c)
