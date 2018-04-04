@@ -1,0 +1,5 @@
+set case-ignore-search on
+set scroll-step 1
+set error-format-string  ^[^ ]+ \([^ ]*\) \([0-9]*\):
+bind-to-key i-search-forward ^s
+bind-to-key i-search-reverse ^r

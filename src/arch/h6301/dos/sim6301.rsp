@@ -1,0 +1,17 @@
+\tc\lib\c0l.obj+
+cmd.obj+
+memory.obj+
+iregtab.obj+
+reg.obj+
+opfunc.obj+
+optab.obj+
+sci.obj+
+instr.obj+
+timer.obj+
+LIBFILES
+sim6301
+/c/x/v
+..\..\sim.lib+
+\tc\lib\EMU.LIB+
+\tc\lib\mathl.lib+
+\tc\lib\cl.lib

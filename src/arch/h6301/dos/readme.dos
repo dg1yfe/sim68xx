@@ -1,0 +1,4 @@
+dmake, gmake
+	[d|g]make -f makefile.tcc
+Borland make
+	make -fmakefile.tcc

@@ -1,0 +1,35 @@
+Splitted into several files so I/O can be reused with
+different chips.
+
+00README
+Makefile
+instr.c		Reset, instruction execution, interrupt, print
+		Instr. execution is tightly coupled to chip & I/O
+iregfunc.c	Internal register ram access, friend of memory.c
+iregtab.c	Internal register (I/O) function table
+memory.c	Memory access
+opfunc.c	Opcode functions
+optab.c		Opcode table
+sci.c		Serial Communications Interface functions
+spi.c		Serial Peripheral Interface functions
+timer.c		Timer
+		Todo: add timer_int()
+
+Internal register IO is separated into several files,
+to could be used by several chip types (6805C4/C8/C9 and 6811
+has almost the same SCI and SPI, for example)
+
+Problem: instr_exec is tightly coupled to which ireg functions that are
+simulated. TOC1/TOC2/.. interrupts
+Solutions:
+	1. Add all necessary interrupts etc to instr_exec and
+	   insert dummy functions where nothing is simulated.
+
+/*
+ * Array to check for I/O
+ *
+ * 64K = 2K*32 (each bit represents IO presence on a 2K range)
+ *  2K = 64*32 (each bit represents IO presence on a 64 byte range)
+ *
+ * For each lowest range: can have function pointer array
+ */

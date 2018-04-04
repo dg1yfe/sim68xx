@@ -1,0 +1,126 @@
+cd ~/simulator/sim-005e/src/
+time make -k 
+cc -g  -I../inc -I../inc/68xx -DUSE_PROTOTYPES  -c callstac.c -o callstac.o
+cc -g  -I../inc -I../inc/68xx -DUSE_PROTOTYPES  -c command.c -o command.o
+cc -g  -I../inc -I../inc/68xx -DUSE_PROTOTYPES  -c cpu.c -o cpu.o
+cc -g  -I../inc -I../inc/68xx -DUSE_PROTOTYPES  -c error.c -o error.o
+cc -g  -I../inc -I../inc/68xx -DUSE_PROTOTYPES  -c fileio.c -o fileio.o
+cc -g  -I../inc -I../inc/68xx -DUSE_PROTOTYPES  -c fprinthe.c -o fprinthe.o
+cc -g  -I../inc -I../inc/68xx -DUSE_PROTOTYPES  -c main.c -o main.o
+cc -g  -I../inc -I../inc/68xx -DUSE_PROTOTYPES  -c symtab.c -o symtab.o
+cc -g  -I../inc -I../inc/68xx -DUSE_PROTOTYPES  -c tty.c -o tty.o
+ar rv libsim.a callstac.o command.o cpu.o error.o fileio.o fprinthe.o main.o symtab.o tty.o
+Creating archive file `/home/arne/simulator/sim-005e/src/libsim.a'
+a - callstac.o
+a - command.o
+a - cpu.o
+a - error.o
+a - fileio.o
+a - fprinthe.o
+a - main.o
+a - symtab.o
+a - tty.o
+ranlib libsim.a
+cd 68xx; make  sim6800; cd ..
+make[1]: Entering directory `/home/arne/simulator/sim-005e/src/68xx'
+cc  -I../../inc/68xx -I../../inc -DUSE_PROTOTYPES  -c alu.c -o alu.o
+cd m6800; make  opfunc.o; cd ..
+make[2]: Entering directory `/home/arne/simulator/sim-005e/src/68xx/m6800'
+cc  -DM6800 -I../../../inc/68xx/m6800 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c opfunc.c -o opfunc.o
+make[2]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx/m6800'
+cd m6801; make  opfunc.o; cd ..
+make[2]: Entering directory `/home/arne/simulator/sim-005e/src/68xx/m6801'
+cc  -DM6801 -I../../../inc/68xx/m6801 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c opfunc.c -o opfunc.o
+make[2]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx/m6801'
+cd h6301; make  opfunc.o; cd ..
+make[2]: Entering directory `/home/arne/simulator/sim-005e/src/68xx/h6301'
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c opfunc.c
+make[2]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx/h6301'
+cd m6805; make  opfunc.o; cd ..
+make[2]: Entering directory `/home/arne/simulator/sim-005e/src/68xx/m6805'
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c opfunc.c
+make[2]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx/m6805'
+cd m6811; make  opfunc.o; cd ..
+make[2]: Entering directory `/home/arne/simulator/sim-005e/src/68xx/m6811'
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c opfunc.c
+make[2]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx/m6811'
+ar rv lib68xx.a alu.o m6800/opfunc.o m6801/opfunc.o h6301/opfunc.o m6805/opfunc.o m6811/opfunc.o
+Creating archive file `/home/arne/simulator/sim-005e/src/68xx/lib68xx.a'
+a - alu.o
+a - m6800/opfunc.o
+a - m6801/opfunc.o
+a - h6301/opfunc.o
+a - m6805/opfunc.o
+a - m6811/opfunc.o
+ranlib lib68xx.a
+cd m6800; make  sim6800; cd ..
+make[2]: Entering directory `/home/arne/simulator/sim-005e/src/68xx/m6800'
+make[2]: *** No rule to make target `sim6800'.
+make[2]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx/m6800'
+make[1]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx'
+cd 68xx; make  sim6301; cd ..
+make[1]: Entering directory `/home/arne/simulator/sim-005e/src/68xx'
+cd h6301; make  sim6301; cd ..
+make[2]: Entering directory `/home/arne/simulator/sim-005e/src/68xx/h6301'
+cc -DHAS_SCI -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c ../cmd.c
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c ../memory.c
+../memory.c: In function `ireg_install':
+../memory.c:110: warning: assignment from incompatible pointer type
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c iregtab.c
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c ../reg.c
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c optab.c
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c sci.c
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c instr.c
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c timer.c
+cc  -o sim6301 cmd.o memory.o iregtab.o reg.o opfunc.o optab.o sci.o instr.o timer.o ../lib68xx.a ../../libsim.a 
+make[2]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx/h6301'
+make[1]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx'
+cd 68xx; make  sim6805; cd ..
+make[1]: Entering directory `/home/arne/simulator/sim-005e/src/68xx'
+cd m6805; make  sim6805; cd ..
+make[2]: Entering directory `/home/arne/simulator/sim-005e/src/68xx/m6805'
+cc -DHAS_SCI -DHAS_SPI -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c ../cmd.c
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c ../memory.c
+../memory.c: In function `ireg_install':
+../memory.c:110: warning: assignment from incompatible pointer type
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c iregtab.c
+iregtab.c:74: warning: initialization from incompatible pointer type
+iregtab.c:74: warning: initialization from incompatible pointer type
+iregtab.c:74: warning: initialization from incompatible pointer type
+iregtab.c:74: warning: initialization from incompatible pointer type
+iregtab.c:79: warning: initialization from incompatible pointer type
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c ../reg.c
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c optab.c
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c ../m6811/sci.c
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c ../m6811/spi.c
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c instr.c
+instr.c: In function `instr_print':
+instr.c:174: warning: assignment makes pointer from integer without a cast
+instr.c:189: warning: assignment makes pointer from integer without a cast
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g  -c timer.c
+cc  -o sim6805 cmd.o memory.o iregtab.o reg.o opfunc.o optab.o sci.o spi.o instr.o timer.o ../lib68xx.a ../../libsim.a 
+make[2]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx/m6805'
+make[1]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx'
+cd 68xx; make  sim6811; cd ..
+make[1]: Entering directory `/home/arne/simulator/sim-005e/src/68xx'
+cd m6811; make  sim6811; cd ..
+make[2]: Entering directory `/home/arne/simulator/sim-005e/src/68xx/m6811'
+cc -DHAS_SCI -DHAS_SPI -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c ../cmd.c
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c ../memory.c
+../memory.c: In function `ireg_install':
+../memory.c:110: warning: assignment from incompatible pointer type
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c iregtab.c
+iregtab.c:45: warning: initialization from incompatible pointer type
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c ../reg.c
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c optab.c
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c instr.c
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c sci.c
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c spi.c
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c timer.c
+cc  -o sim6811 cmd.o memory.o iregtab.o reg.o opfunc.o optab.o instr.o sci.o spi.o timer.o ../lib68xx.a ../../libsim.a 
+make[2]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx/m6811'
+make[1]: Leaving directory `/home/arne/simulator/sim-005e/src/68xx'
+78.41user 32.50system 2:08.43elapsed 86%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+0minor)pagefaults 0swaps
+
+Compilation finished at Sun Sep 10 16:11:16

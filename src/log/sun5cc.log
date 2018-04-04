@@ -1,0 +1,218 @@
+cd /home3/xdhar/div/sim-005/src/
+time make -k
+cc -g -I../inc -I../inc/68xx -DUSE_PROTOTYPES -c  callstac.c
+cc -g -I../inc -I../inc/68xx -DUSE_PROTOTYPES -c  command.c
+"command.c", line 272: warning: argument is incompatible with prototype: arg #2
+"command.c", line 287: warning: argument is incompatible with prototype: arg #2
+"command.c", line 325: warning: argument is incompatible with prototype: arg #2
+"command.c", line 378: warning: argument is incompatible with prototype: arg #2
+"command.c", line 421: warning: argument is incompatible with prototype: arg #2
+cc -g -I../inc -I../inc/68xx -DUSE_PROTOTYPES -c  cpu.c
+cc -g -I../inc -I../inc/68xx -DUSE_PROTOTYPES -c  error.c
+cc -g -I../inc -I../inc/68xx -DUSE_PROTOTYPES -c  fileio.c
+cc -g -I../inc -I../inc/68xx -DUSE_PROTOTYPES -c  fprinthe.c
+cc -g -I../inc -I../inc/68xx -DUSE_PROTOTYPES -c  main.c
+cc -g -I../inc -I../inc/68xx -DUSE_PROTOTYPES -c  symtab.c
+cc -g -I../inc -I../inc/68xx -DUSE_PROTOTYPES -c  tty.c
+ar -rv libsim.a callstac.o command.o cpu.o error.o fileio.o fprinthe.o main.o symtab.o tty.o
+a - callstac.o
+a - command.o
+a - cpu.o
+a - error.o
+a - fileio.o
+a - fprinthe.o
+a - main.o
+a - symtab.o
+a - tty.o
+ar: creating libsim.a
+ar: writing libsim.a
+ranlib libsim.a
+sh: ranlib: not found
+*** Error code 1 (ignored)
+cd 68xx; make sim6800; cd ..
+cc  -I../../inc/68xx -I../../inc -DUSE_PROTOTYPES -c  alu.c
+"alu.c", line 23: warning: identifier redeclared: alu_addbyte
+"alu.c", line 26: warning: type does not match prototype: val1
+"alu.c", line 26: warning: type does not match prototype: val2
+"alu.c", line 26: warning: type does not match prototype: carry
+"alu.c", line 43: warning: identifier redeclared: alu_addword
+"alu.c", line 46: warning: type does not match prototype: carry
+"alu.c", line 61: warning: identifier redeclared: alu_andbyte
+"alu.c", line 63: warning: type does not match prototype: val1
+"alu.c", line 63: warning: type does not match prototype: val2
+"alu.c", line 76: warning: identifier redeclared: alu_bittestbyte
+"alu.c", line 77: warning: type does not match prototype: value
+"alu.c", line 98: warning: identifier redeclared: alu_clrbyte
+"alu.c", line 99: warning: type does not match prototype: value
+"alu.c", line 111: warning: identifier redeclared: alu_combyte
+"alu.c", line 112: warning: type does not match prototype: value
+"alu.c", line 125: warning: identifier redeclared: alu_decbyte
+"alu.c", line 126: warning: type does not match prototype: value
+"alu.c", line 150: warning: identifier redeclared: alu_incbyte
+"alu.c", line 151: warning: type does not match prototype: value
+"alu.c", line 171: warning: identifier redeclared: alu_negbyte
+"alu.c", line 172: warning: type does not match prototype: value
+"alu.c", line 180: warning: identifier redeclared: alu_orbyte
+"alu.c", line 182: warning: type does not match prototype: val1
+"alu.c", line 182: warning: type does not match prototype: val2
+"alu.c", line 193: warning: identifier redeclared: alu_xorbyte
+"alu.c", line 195: warning: type does not match prototype: val1
+"alu.c", line 195: warning: type does not match prototype: val2
+"alu.c", line 207: warning: identifier redeclared: alu_shlbyte
+"alu.c", line 209: warning: type does not match prototype: lsbit
+"alu.c", line 225: warning: identifier redeclared: alu_shrbyte
+"alu.c", line 227: warning: type does not match prototype: msbit
+"alu.c", line 243: warning: identifier redeclared: alu_shlword
+"alu.c", line 245: warning: type does not match prototype: lsbit
+"alu.c", line 261: warning: identifier redeclared: alu_shrword
+"alu.c", line 263: warning: type does not match prototype: msbit
+"alu.c", line 279: warning: identifier redeclared: alu_subbyte
+"alu.c", line 282: warning: type does not match prototype: val1
+"alu.c", line 282: warning: type does not match prototype: val2
+"alu.c", line 282: warning: type does not match prototype: carry
+"alu.c", line 299: warning: identifier redeclared: alu_subword
+"alu.c", line 302: warning: type does not match prototype: carry
+"alu.c", line 318: warning: identifier redeclared: alu_testbyte
+"alu.c", line 319: warning: type does not match prototype: operand
+cd m6800; make opfunc.o; cd ..
+cc -DM6800 -I../../../inc/68xx/m6800 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c opfunc.c
+"opfunc.c", line 59: warning: identifier redeclared: pushbyte
+"opfunc.c", line 59: warning: type does not match prototype: value
+cd m6801; make opfunc.o; cd ..
+cc  -DM6801 -I../../../inc/68xx/m6801 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -c  opfunc.c
+cd h6301; make opfunc.o; cd ..
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c opfunc.c
+cd m6805; make opfunc.o; cd ..
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c opfunc.c
+cd m6811; make opfunc.o; cd ..
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c opfunc.c
+ar -rv lib68xx.a alu.o m6800/opfunc.o m6801/opfunc.o h6301/opfunc.o m6805/opfunc.o m6811/opfunc.o
+a - alu.o
+a - m6800/opfunc.o
+a - m6801/opfunc.o
+a - h6301/opfunc.o
+a - m6805/opfunc.o
+a - m6811/opfunc.o
+ar: creating lib68xx.a
+ar: writing lib68xx.a
+ranlib lib68xx.a
+sh: ranlib: not found
+*** Error code 1 (ignored)
+cd m6800; make sim6800; cd ..
+make: Warning: Don't know how to make target `sim6800'
+Current working directory /home3/xdhar/div/sim-005/src/68xx/m6800
+make: Warning: Target `sim6800' not remade because of errors
+Current working directory /home3/xdhar/div/sim-005/src/68xx/m6800
+cd 68xx; make sim6301; cd ..
+cd h6301; make sim6301; cd ..
+cc -DHAS_SCI -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c ../cmd.c
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c ../memory.c
+"../memory.c", line 81: warning: identifier redeclared: ireg_putb
+"../memory.c", line 83: warning: type does not match prototype: value
+"../memory.c", line 110: warning: assignment type mismatch
+"../memory.c", line 163: warning: identifier redeclared: mem_putb
+"../memory.c", line 165: warning: type does not match prototype: value
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c iregtab.c
+"iregtab.c", line 29: warning: identifier redeclared: port_putb
+"iregtab.c", line 31: warning: type does not match prototype: value
+"iregtab.c", line 56: warning: initialization type mismatch
+"iregtab.c", line 56: warning: initialization type mismatch
+"iregtab.c", line 57: warning: initialization type mismatch
+"iregtab.c", line 57: warning: initialization type mismatch
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c ../reg.c
+"../reg.c", line 76: warning: identifier redeclared: reg_setacca
+"../reg.c", line 76: warning: type does not match prototype: value
+"../reg.c", line 77: warning: identifier redeclared: reg_setaccb
+"../reg.c", line 77: warning: type does not match prototype: value
+"../reg.c", line 115: warning: identifier redeclared: reg_setccr
+"../reg.c", line 115: warning: type does not match prototype: value
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c optab.c
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c sci.c
+"sci.c", line 84: warning: identifier redeclared: trcsr_putb
+"sci.c", line 86: warning: type does not match prototype: value
+"sci.c", line 138: warning: identifier redeclared: tdr_putb
+"sci.c", line 140: warning: type does not match prototype: value
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c instr.c
+cc -DH6301 -I../../../inc/68xx/h6301 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c timer.c
+"timer.c", line 44: warning: identifier redeclared: tcsr_putb
+"timer.c", line 46: warning: type does not match prototype: value
+"timer.c", line 53: warning: identifier redeclared: ocr_hi_putb
+"timer.c", line 55: warning: type does not match prototype: value
+"timer.c", line 62: warning: identifier redeclared: ocr_lo_putb
+"timer.c", line 64: warning: type does not match prototype: value
+cc  -o sim6301 cmd.o memory.o iregtab.o reg.o opfunc.o optab.o sci.o instr.o timer.o ../lib68xx.a ../../libsim.a 
+cd 68xx; make sim6805; cd ..
+cd m6805; make sim6805; cd ..
+cc -DHAS_SCI -DHAS_SPI -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c ../cmd.c
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c ../memory.c
+"../memory.c", line 81: warning: identifier redeclared: ireg_putb
+"../memory.c", line 83: warning: type does not match prototype: value
+"../memory.c", line 110: warning: assignment type mismatch
+"../memory.c", line 163: warning: identifier redeclared: mem_putb
+"../memory.c", line 165: warning: type does not match prototype: value
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c iregtab.c
+"iregtab.c", line 71: warning: initialization type mismatch
+"iregtab.c", line 71: warning: initialization type mismatch
+"iregtab.c", line 71: warning: initialization type mismatch
+"iregtab.c", line 71: warning: initialization type mismatch
+"iregtab.c", line 76: warning: initialization type mismatch
+"iregtab.c", line 77: warning: initialization type mismatch
+"iregtab.c", line 78: warning: initialization type mismatch
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c ../reg.c
+"../reg.c", line 76: warning: identifier redeclared: reg_setacca
+"../reg.c", line 76: warning: type does not match prototype: value
+"../reg.c", line 77: warning: identifier redeclared: reg_setaccb
+"../reg.c", line 77: warning: type does not match prototype: value
+"../reg.c", line 115: warning: identifier redeclared: reg_setccr
+"../reg.c", line 115: warning: type does not match prototype: value
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c optab.c
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c ../m6811/sci.c
+"../m6811/sci.c", line 150: warning: identifier redeclared: sccr2_putb
+"../m6811/sci.c", line 152: warning: type does not match prototype: value
+"../m6811/sci.c", line 173: warning: identifier redeclared: scdr_putb
+"../m6811/sci.c", line 175: warning: type does not match prototype: value
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c ../m6811/spi.c
+"../m6811/spi.c", line 70: warning: identifier redeclared: spdr_putb
+"../m6811/spi.c", line 72: warning: type does not match prototype: value
+cc -DM6805 -I../../../inc/68xx/m6805 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES -g -c instr.c
+cc  -o sim6805 cmd.o memory.o iregtab.o reg.o opfunc.o optab.o sci.o spi.o instr.o ../lib68xx.a ../../libsim.a 
+cd 68xx; make sim6811; cd ..
+cd m6811; make sim6811; cd ..
+cc -DHAS_SCI -DHAS_SPI -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c ../cmd.c
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c ../memory.c
+"../memory.c", line 81: warning: identifier redeclared: ireg_putb
+"../memory.c", line 83: warning: type does not match prototype: value
+"../memory.c", line 110: warning: assignment type mismatch
+"../memory.c", line 163: warning: identifier redeclared: mem_putb
+"../memory.c", line 165: warning: type does not match prototype: value
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c iregtab.c
+"iregtab.c", line 45: warning: initialization type mismatch
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c ../reg.c
+"../reg.c", line 76: warning: identifier redeclared: reg_setacca
+"../reg.c", line 76: warning: type does not match prototype: value
+"../reg.c", line 77: warning: identifier redeclared: reg_setaccb
+"../reg.c", line 77: warning: type does not match prototype: value
+"../reg.c", line 115: warning: identifier redeclared: reg_setccr
+"../reg.c", line 115: warning: type does not match prototype: value
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c optab.c
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c instr.c
+"instr.c", line 137: warning: semantics of "<" change in ANSI C; use explicit cast
+"instr.c", line 142: warning: semantics of "<" change in ANSI C; use explicit cast
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c sci.c
+"sci.c", line 150: warning: identifier redeclared: sccr2_putb
+"sci.c", line 152: warning: type does not match prototype: value
+"sci.c", line 173: warning: identifier redeclared: scdr_putb
+"sci.c", line 175: warning: type does not match prototype: value
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c spi.c
+"spi.c", line 70: warning: identifier redeclared: spdr_putb
+"spi.c", line 72: warning: type does not match prototype: value
+cc -DM6811 -I../../../inc/68xx/m6811 -I../../../inc/68xx -I../../../inc -DUSE_PROTOTYPES  -c timer.c
+"timer.c", line 18: warning: identifier redeclared: tflg_putb
+"timer.c", line 20: warning: type does not match prototype: value
+cc  -o sim6811 cmd.o memory.o iregtab.o reg.o opfunc.o optab.o instr.o sci.o spi.o timer.o ../lib68xx.a ../../libsim.a 
+
+real       58.9
+user       26.7
+sys        14.6
+
+Compilation finished at Thu Aug 24 18:55:47

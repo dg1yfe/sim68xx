@@ -1,0 +1,17 @@
+# Makefile 68xx simulators (works with GNU Make)
+# Edit CC, CFLAGS to suit your system
+#
+# $Id$
+include ./default.mk
+
+# The sequence of subdirectories is important,
+# since this represents hidden dependencies
+SUBDIRS	= arch base boards
+
+default: all
+all install clean realclean depend:
+	$(MAKE) -f Makefile.w32 -C arch   $@
+	$(MAKE) -f Makefile     -C base   $@
+	$(MAKE) -f Makefile     -C boards $@
+
+

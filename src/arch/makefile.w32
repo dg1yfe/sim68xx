@@ -1,0 +1,12 @@
+include ../default.mk
+MAKEFILE=Makefile
+
+SUBDIRS	= m68xx h6301 m6805 m6811
+
+all clean default depend realclean:
+#	for %%f in ($(SUBDIRS)) $(MAKE) -C %%f $@
+	$(MAKE) -f $(MAKEFILE) -C m68xx $@
+	$(MAKE) -f $(MAKEFILE) -C h6301 $@
+	$(MAKE) -f $(MAKEFILE) -C m6805 $@
+	$(MAKE) -f $(MAKEFILE) -C m6811 $@
+
