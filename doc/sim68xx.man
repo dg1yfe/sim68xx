@@ -1,0 +1,213 @@
+.if n .ds Q \&"
+.if t .ds Q ``
+.if n .ds U \&"
+.if t .ds U ''
+.TH "sim68xx" 1 
+.tr \&
+.nr bi 0
+.nr ll 0
+.nr el 0
+.de DS
+..
+.de DE
+..
+.de Pp
+.ie \\n(ll>0 \{\
+.ie \\n(bi=1 \{\
+.nr bi 0
+.if \\n(t\\n(ll=0 \{.IP \\(bu\}
+.if \\n(t\\n(ll=1 \{.IP \\n+(e\\n(el.\}
+.\}
+.el .sp 
+.\}
+.el \{\
+.ie \\nh=1 \{\
+.LP
+.nr h 0
+.\}
+.el .PP 
+.\}
+..
+.SH NAME
+sim6301, sim6805, sim6811 - simulators for 6800 based CPUs
+
+.SH SYNOPSIS
+
+
+.Pp
+\fBsim6301\fP \fIfile\fP
+.Pp
+\fBsim6805\fP \fIfile\fP
+.Pp
+\fBsim6811\fP \fIfile\fP
+.Pp
+.SH DESCRIPTION
+Each of these simulators simulate CPU, memory and on chip IO for its
+architecture. A monitor that resembles a typical ROM boot monitor is
+available to control execution of the CPU, and to examine states of
+CPU, memory and IO.
+
+.Pp
+All simulators have 64K memory available for user programs. A more
+detailed description of each simulator follows.
+.nr ll +1
+.nr t\n(ll 2
+.if \n(ll>1 .RS
+.IP "   \fIsim6301\fP"
+.nr bi 1
+.Pp
+Simulator for 6800, 6801 and 6301.
+The 6301 instruction set is a superset of the 6801, and the 6801
+instruction set is a superset of the 6800. The simulator is modeled
+after the 6801/6301V/6303R chips, with interrupt driven SCI and timer
+output compare.
+.Pp
+.IP "   \fIsim6805\fP"
+.nr bi 1
+.Pp
+Simulator for 68hc05c series. Interrupt driven SCI, SPI and timer is
+simulated. The simulation of SCI and SPI is borrowed from sim6811.
+.Pp
+.IP "   \fIsim6811\fP"
+.nr bi 1
+.Pp
+Simulator for 68hc11 series, which is a superset of 6801, and different
+from 6301. Interrupt driven SCI, SPI and timer output compare 1 is
+supported. 
+.Pp
+.if \n(ll>1 .RE
+.nr ll -1
+.Pp
+When the simulator is started, it will try to load files in the
+following order.
+.nr ll +1
+.nr t\n(ll 2
+.if \n(ll>1 .RS
+.IP "   Program file"
+.nr bi 1
+.Pp
+This file must be on S19 format and given as argument when the
+simulator is started.
+.Pp
+.IP "   Symbol file"
+.nr bi 1
+.Pp
+The symbol file contains value to string conversion information, and one
+of the following files is loaded, if it exists.  The file must have
+extension \fI.map\fP or \fI.sym\fP.
+.Pp
+If the extension is \fI.map\fP, it is expected to have \fIBaldwin
+aslink\fP format, i.e.  an ascii file containing lines of a
+hexadecimal value followed by a string.
+.Pp
+If the extension is \fI.sym\fP, it is assumed to have \fIMotorola
+freeware asm\fP format, i.e.  an ascii file containing lines of a
+string followed by a hexadecimal value.
+.Pp
+.IP "   Command file"
+.nr bi 1
+.Pp
+If a file with extension \fI.sim\fP exists, it will
+be used as a command file. If no such file exists, the simulator will
+try to open the file \fI.simrc\fP (or \fIsim.rc\fP under MSDOS). The
+simulator will read and execute commands from a command file, if
+found, as they had been present on standard input, until the end of
+the command file is reached.
+.Pp
+.if \n(ll>1 .RE
+.nr ll -1
+.Pp
+A simulator is most useful when target is not available for some
+reason, or there is limited or cumbersome debug support on target.
+.Pp
+.SH USAGE
+The following is a summary of user commands supported. For more
+details, refer to the help text in the simulator.
+
+.Pp
+.nr ll +1
+.nr t\n(ll 0
+.if \n(ll>1 .RS
+.nr bi 1
+.Pp
+Set/clear program breakpoints in the program code and on
+execution error
+.nr bi 1
+.Pp
+Modification and display of memory and CPU registers
+.nr bi 1
+.Pp
+Run, step over subroutines and trace (single step)
+instructions. A running program can be aborted any time by interrupt
+from the user. 
+.nr bi 1
+.Pp
+Simple support for global symbols
+.if \n(ll>1 .RE
+.nr ll -1
+.Pp
+.SH EXAMPLES
+
+.SH FILES
+
+.Pp
+.nr ll +1
+.nr t\n(ll 2
+.if \n(ll>1 .RS
+.IP "   \fIfile.s19\fP"
+.nr bi 1
+.Pp
+Program file
+.IP "   \fIfile.map\fP or \fIfile.sym\fP"
+.nr bi 1
+.Pp
+Symbol file
+.IP "   \fIfile.sim\fP or \fI.simrc\fP or \fIsim.rc\fP"
+.nr bi 1
+.Pp
+Command file
+.Pp
+.if \n(ll>1 .RE
+.nr ll -1
+.Pp
+.SH AUTHOR
+Arne Riiber <riiber@sn.no>
+
+.SH HISTORY
+The first simulator was written by the author for 6301 in single chip
+mode early in 1993, with to little space to have debug support in the
+ROM. Wrote this using Turbo C/DOS and later ported it to
+gcc/Linux. Did some performance tests that favoured gcc/Linux with a
+factor of 10. Added support for 6805 and later for 6811 in 1994.
+New directory structure to ease maintenance, and added test suite for the
+6800 core, in 1995. Compiled with Turbo C/DOS, gcc/Linux and
+cc/gcc/Solaris. Optimized code for inlining early 1996 which doubled
+the speed. 
+
+.SH SEE ALSO
+aslink(1), asm68xx(1)
+
+.SH BUGS
+
+.Pp
+.nr ll +1
+.nr t\n(ll 0
+.if \n(ll>1 .RS
+.nr bi 1
+.Pp
+There are no known bugs in the execution of opcodes.
+.nr bi 1
+.Pp
+There is only support for one IO area.
+.nr bi 1
+.Pp
+There is only support for global symbols.
+.nr bi 1
+.Pp
+There is no support for different types of memory other than 64K RAM.
+.nr bi 1
+.Pp
+There is no easy-to-use window based user interface.
+.if \n(ll>1 .RE
+.nr ll -1
+.Pp

@@ -1,0 +1,120 @@
+<HTML>
+<HEAD>
+<TITLE>sim68xx Users Guide: Installing the simulator</TITLE>
+</HEAD>
+<BODY>
+<A HREF="usrguide-1.html">Previous</A>
+<A HREF="usrguide-3.html">Next</A>
+<A HREF="usrguide.html#toc2">Table of Contents</A>
+<HR>
+<H2><A NAME="s2">2. Installing the simulator</A></H2>
+
+
+<P>This chapter is incomplete.</P>
+
+<H2><A NAME="ss2.1">2.1 Getting the simulator</A></H2>
+
+
+<P>The home page for the simulator is located at:
+<A HREF="http://www.geocities.com/TheTropics/Harbor/8707/simulator/sim68xx">http://www.geocities.com/TheTropics/Harbor/8707/simulator/sim68xx</A></P>
+<P>From this homepage, you can download executable programs and
+source code.</P>
+<P>In this document, the source code package is named
+<CODE>sim68xx.tar.gz</CODE> or <CODE>sim68xx.zip</CODE>.</P>
+<P>The following are examples of installing the simulator.</P>
+
+
+<H2><A NAME="ss2.2">2.2 Installing on unix</A></H2>
+
+
+<P>If you downloaded a binary version, you can skip the compiling.</P>
+
+<H3>Extracting the archive</H3>
+
+<P>
+<PRE>
+ unix$ tar xfz sim68xx.tar.gz 
+</PRE>
+ or
+<PRE>
+ unix$ unzip sim68xx.zip 
+</PRE>
+</P>
+
+
+<H3>Compiling the source code</H3>
+
+<P>Perform this step if downloaded the source. You need GNU make
+v.3.70 or greater.
+<PRE>
+ unix$ cd src
+</PRE>
+
+<PRE>
+ unix$ make 
+</PRE>
+</P>
+
+
+<H3>Installing the binaries</H3>
+
+<P>The binaries are located in <CODE>src/boards</CODE>.
+Copy the binaries to a directory in the search path.
+The simulator can be run without copying the binaries,
+though. </P>
+
+
+
+<H2><A NAME="ss2.3">2.3 Installing on DOS/Windows</A></H2>
+
+
+<P>Please note that the MSDOS version does not exist, use the
+Win95/NT version instead. If you downloaded a binary version,
+you can skip the compiling.</P>
+
+<H3>Extracting the archive</H3>
+
+<P>
+<PRE>
+ MSDOS&gt; unzip -a sim68xx.zip 
+</PRE>
+ or
+<PRE>
+ MSDOS&gt; pkunzip -d sim68xx.zip 
+</PRE>
+ or use
+WinZip.</P>
+
+
+<H3>Compiling the source code</H3>
+
+<P>Perform this step if downloaded the source. You need the GCC
+compiler for Win32 and GNU make v.3.70 or greater.
+<PRE>
+ MSDOS&gt; cd src
+</PRE>
+
+<PRE>
+ MSDOS&gt; gnumake -f makefile.w32 
+</PRE>
+</P>
+
+
+<H3>Installing the binaries</H3>
+
+<P>The binaries are located in <CODE>src\boards</CODE>.
+Copy the binaries to a directory in the search path.
+The simulator can be run without copying the binaries,
+though. </P>
+
+
+
+
+
+
+<HR>
+<A HREF="usrguide-1.html">Previous</A>
+<A HREF="usrguide-3.html">Next</A>
+<A HREF="usrguide.html#toc2">Table of Contents</A>
+</BODY>
+</HTML>

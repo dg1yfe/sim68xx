@@ -1,0 +1,200 @@
+<HTML>
+<HEAD>
+<TITLE>sim68xx Users Guide: Running the simulator</TITLE>
+</HEAD>
+<BODY>
+<A HREF="usrguide-2.html">Previous</A>
+<A HREF="usrguide-4.html">Next</A>
+<A HREF="usrguide.html#toc3">Table of Contents</A>
+<HR>
+<H2><A NAME="s3">3. Running the simulator</A></H2>
+
+
+<P>The following is a guided tour to running the simulator. sim6811
+on unix is used as example.</P>
+
+<H2><A NAME="ss3.1">3.1 Starting up</A></H2>
+
+
+<P>From the top directory, enter the commands</P>
+<P>
+<PRE>
+        % cd test/arch/m6811
+        % ../../../src/boards/sim6811 68mon.s19
+        PC=e06b A:B=0000 X=0000 Y=0000 SP=0000 CCR=d0(SXhInzvc) [0]
+        e06b    8e 00 f6       lds  #00f6       STACK
+      
+</PRE>
+</P>
+<P>The simulator is ready to run. The CPU state is printed with
+registers (PC .. CCR), clock cycles (<F>0</F>) on the first line. All
+numbers are printed in hexadecimal (except for clock cycles). On
+the next line follows memory address, the unassembled
+instruction in hexadecimal and mnemonic format, and a symbol
+string the right.</P>
+
+
+
+<H2><A NAME="ss3.2">3.2 Getting on-line help</A></H2>
+
+
+<P>
+<PRE>
+        &gt;h
+        Breakpoint commands
+                b                       - list breakpoints
+                b [+|-] [addr]          - toggle, set(+) or clear(-) breakpoint
+                B s|c [addr]            - set/clear breakpoint
+                B C                     - clear all breakpoints
+                B E|e                   - break on error/no break on error
+        Memory commands
+                md [addr [count]]       - memory display
+                mm  addr [hh hh..]      - memory modify
+                u  [addr [count]]       - unassemble
+        Run commands
+                g [addr]                - go
+                s                       - step over subroutines
+                t                       - trace one instruction
+                R                       - jump to reset vector
+        Stack commands
+                c                       - print call stack
+                C                       - print function calls on/off toggle
+                w [min max]             - set stack watches
+        Miscellanous commands
+                l                       - list symbols
+                !Command                - pass 'Command' to shell
+                q                       - quit
+        Register commands:
+                r p|a|b|c|d|x|y|s val   - modify register
+        External event commands
+                i sci [hh|&quot;ss&quot;] ..        - io input hex digits or strings to SCI
+                i sci print               - print contents of SCI buffer
+                i spi [hh|&quot;ss&quot;] ..        - io input hex digits or strings to SPI
+                i spi print               - print contents of SPI buffer
+                i out [hex|ascii|\ascii]  - io output mode for displaying data
+      
+</PRE>
+</P>
+
+
+
+<H2><A NAME="ss3.3">3.3 Displaying the source</A></H2>
+
+
+<P>The simulator can only display assembly language and convert
+numbers to global symbols.</P>
+<P>
+<PRE>
+        &gt;u
+        e06b    8e 00 f6       lds  #00f6       STACK
+        e06e    86 20          ldaa #20 SP
+        e070    ba 10 28       oraa  1028       SPCR
+        e073    b7 10 28       staa  1028       SPCR
+        e076    86 30          ldaa #30
+        e078    b7 10 2b       staa  102b
+        e07b    86 0c          ldaa #0c PTOF
+        e07d    b7 10 2d       staa  102d       SCCR2
+        e080    7f 00 fd       clr   00fd       FLAG
+        e083    86 7e          ldaa #7e
+      
+</PRE>
+</P>
+
+
+
+<H2><A NAME="ss3.4">3.4 Stepping through an instruction</A></H2>
+
+
+<P>
+<PRE>
+        &gt;t
+        PC=e06e A:B=0000 X=0000 Y=0000 SP=00f6 CCR=d0(SXhInzvc) [3]
+        e06e    86 20          ldaa #20 SP
+      
+</PRE>
+</P>
+
+<P>Pressing Enter wil repeat the last command and is well suited
+for stepping through several instructions in sequence.</P>
+
+
+
+<H2><A NAME="ss3.5">3.5 Setting break point</A></H2>
+
+
+<P>We want to debug the routine GETIN, so we set a breakpoint at
+its entry point, and then list all breakpoints.</P>
+<P>
+<PRE>
+        &gt;b GETIN
+        Breakpoint at e1d8 set
+
+        &gt;b
+        Active breakpoints:
+        e1d8    GETIN
+      
+</PRE>
+</P>
+
+
+<H2><A NAME="ss3.6">3.6 Running until breakpoint</A></H2>
+
+
+<P>
+<PRE>
+        &gt;g
+        e06e: Running...
+
+                       68Mon V1.2 (C) 1992 Keith Vasilakes
+
+          SXHINZVC  AB AA  IX   IY   PC   SP
+          11100110  A4 7E E6A4 7EE6 A47E 0000
+        &gt;Breakpoint before code execution, address e1d8!
+        Subroutine: e1d8 GETIN
+        PC=e1d8 A:B=3e03 X=e1fc Y=0000 SP=00f2 CCR=c8(SXhiNzvc) [8936]
+        e1d8    b6 10 2e       ldaa  102e       SCSR
+      
+</PRE>
+ </P>
+<P>The text printed between <CODE>Running...</CODE> and
+<CODE>Breakpoint</CODE>, is output from the program running
+under the simulator.</P>
+
+
+<H2><A NAME="ss3.7">3.7 Displaying the call stack</A></H2>
+
+
+<P>
+<PRE>
+        &gt;c
+        Call stack:
+        e1cd    CHRIN
+        e1d8    GETIN
+      
+</PRE>
+</P>
+<P>We are in routine GETIN, that was called from routine CHRIN.</P>
+
+
+<H2><A NAME="ss3.8">3.8 Entering IO port data</A></H2>
+
+
+
+<P>There are two ways of entering IO port data into the simulator:
+<UL>
+<LI>Stop the simulator and change the IO port values, or in
+the case of serial interrupt, enter data into the
+serial buffer of the simulator.</LI>
+<LI>Serial data can be entered on standard input while the
+simulator is running.</LI>
+</UL>
+</P>
+
+
+
+<HR>
+<A HREF="usrguide-2.html">Previous</A>
+<A HREF="usrguide-4.html">Next</A>
+<A HREF="usrguide.html#toc3">Table of Contents</A>
+</BODY>
+</HTML>

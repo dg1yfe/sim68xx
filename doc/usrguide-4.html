@@ -1,0 +1,341 @@
+<HTML>
+<HEAD>
+<TITLE>sim68xx Users Guide: Adding code that simulates your hardware</TITLE>
+</HEAD>
+<BODY>
+<A HREF="usrguide-3.html">Previous</A>
+<A HREF="usrguide-5.html">Next</A>
+<A HREF="usrguide.html#toc4">Table of Contents</A>
+<HR>
+<H2><A NAME="s4">4. Adding code that simulates your hardware</A></H2>
+
+
+<P>The 68xx family use memory mapped IO. For chips containing builtin
+IO ports, the memory is divided into two areas: </P>
+<P>
+<UL>
+<LI>Internal register area for on-chip IO ports</LI>
+<LI>Memory outside internal register area</LI>
+</UL>
+</P>
+<P>To add code simulating hardware connected to on-chip IO ports, proceed
+as described in subchapter "Simulator API for installing an IO port
+function".</P>
+<P>To add code simulating hardware connected to memory outside the
+internal register area, proceed as in subchapter "Simulator API for
+memory access".</P>
+
+
+<H2><A NAME="ss4.1">4.1 Simulator API for installing an IO port function</A></H2>
+
+
+<P>The simulator has space to store a pointer to a function for each
+address in the internal register area.</P>
+<P>Put the installation code in the routine board_install(). This routine
+is called when the simulator starts up.</P>
+<P>To install an IO simulating function, use the macro
+<UL>
+<LI>ireg_install(offs,getb,putb)<P>where
+<UL>
+<LI>offs         is the offset from the start of the IO area</LI>
+<LI>getb(offs)   is called to get a byte from the IO address</LI>
+<LI>putb(offs,b) is called to put a byte into the IO address</LI>
+</UL>
+</P>
+</LI>
+</UL>
+</P>
+<P>See the example section for details.</P>
+
+
+<H2><A NAME="ss4.2">4.2 Simulator API for storage of IO port data</A></H2>
+
+
+
+<P>The simulator has a memory area called <CODE>iram[]</CODE> where IO port
+data can be stored. Functions installed with <CODE>ireg_install()</CODE>
+can use this area for storage of data, but it is not required.</P>
+<P>The simulator will access on-chip IO through the following
+macros: 
+<UL>
+<LI>ireg_getb(addr)   - return a byte from memory</LI>
+<LI>ireg_getw(addr)   - return a word of two bytes from memory</LI>
+<LI>ireg_putb(addr,b) - put a byte into memory</LI>
+<LI>ireg_putw(addr,w) - put a word of two bytes into memory</LI>
+</UL>
+</P>
+<P>To store IO port data, use the <CODE>ireg_put()</CODE> routines.
+To retrieve IO port data, use the <CODE>ireg_get()</CODE> routines.
+See the example section for details.</P>
+
+
+<H2><A NAME="ss4.3">4.3 Simulator API for memory access</A></H2>
+
+
+<P>The simulator acesses all memory through the following routines:</P>
+<P>
+<UL>
+<LI>mem_getb(addr)   - return a byte from memory</LI>
+<LI>mem_getw(addr)   - return a word of two bytes from memory</LI>
+<LI>mem_putb(addr,b) - put a byte into memory</LI>
+<LI>mem_putw(addr,w) - put a word of two bytes into memory</LI>
+</UL>
+</P>
+<P>These routines were moved to reside in a header file
+(<CODE>inc/arch/m68xx/memory.h</CODE>), to make inlining possible.</P>
+<P>To simulate IO outside the internal register are, modify the file
+<CODE>inc/arch/m68xx/memory.h</CODE> to suit your needs.</P>
+
+
+
+
+
+
+<H2><A NAME="ss4.4">4.4 Example</A></H2>
+
+<P>The following simple example will show an example with polled IO, and
+is extended to use interrupt IO.</P>
+<P>To be portable to many environments, only the standard C iostream
+input/output routines are used for user interaction.</P>
+<P>A windowing environment could instead have drawn a LED and a switch,
+and let the user toggle the LED when the switch was pushed with the
+mouse. </P>
+
+<H3>Hardware circuit</H3>
+
+
+<P>Assume a LED is conned to an output port, and a switch is connected to
+an input port as shown below.</P>
+<P>
+<PRE>
+        --------+       LED
+             PA7|-----|&gt;---------o +5V
+                |        ____ R
+        CPU     |    +--|____|---o +5V
+                |    |
+             PA6|----+
+             ___|    |   ___ SW
+             IRQ|----+---o o-----o 0V
+        --------+
+</PRE>
+</P>
+<P>When the user pushes the switch SW, the LED is to toggle. The switch
+input is pulled down to 0V when the switch is pushed, and the input is
+also connected to the interrupt input IRQ, to trig an interrupt.</P>
+
+
+<H3>Polled IO</H3>
+
+
+<P>When polled IO is used, the interrupt line is not used.</P>
+
+<H3>Target CPU (68xx) code</H3>
+
+
+<P>The following code is to be compiled with a compiler targeted for a
+CPU in the 68xx series.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+char sw_curr; /* Current value of switch SW */
+char sw_last; /* Last value of switch SW */
+
+main ()
+{
+        while (1) {
+                sw_curr = _porta & 0x40; /* read PA6 - switch */
+                if (sw_curr != sw_last) {
+                        _porta ~= 0x80; /* write PA7 - LED */
+                }
+                sw_last = sw_curr;
+        }
+}
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H3>Simulator code</H3>
+
+
+<P>The following code is to be compiled with a compiler targeted for a
+the host on which the simulator runs.</P>
+<P>Write the following routines (src/boards/examp1.c).</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+/*
+ * Called when CPU reads from PORTA
+ */
+examp1_porta_getb (offs)
+{
+        pa6 = ireg_getb (offs) & 0x40;
+        if (pa6) {
+                printf (&quot;Input is ON\n&quot;);
+        } else {
+                printf (&quot;Input is OFF\n&quot;);
+        }
+        return ireg_getb (offs);
+}
+
+/*
+ * Called when CPU writes to PORTA
+ */
+examp1_porta_putb (offs, val)
+{
+        pa7 = ireg_getb (offs) & 0x80;
+        if (pa7) {
+                printf (&quot;LED is ON\n&quot;);
+        } else {
+                printf (&quot;LED is OFF\n&quot;);
+        }
+        ireg_putb (offs);
+}
+
+/*
+ * Called when user enters an unknown command or help from simulator prompt
+ *
+ *    Input             Return
+ *      &quot;h&quot;               1
+ *      &quot;e&quot; &quot;sw&quot; &quot;on&quot;     1
+ *      &quot;e&quot; &quot;sw&quot; &quot;off&quot;    1
+ *      other input       0
+ */
+int
+examp1_cmd (argc, argv)
+        int   argc;
+        char *argv[];
+{
+        if (argc &lt; 1)
+                return 0;
+        /*
+         * If user typed 'h', supply some help and return
+         */
+        if (strncmp (argv[0], &quot;h&quot;, strlen(&quot;h&quot;)) == 0) {
+                printf (&quot;EXAMP1 commands:\n&quot;);
+                printf (&quot;       e  sw [on|off] - set switch SW on or off\n&quot;);
+                return 1;
+        }
+        /*
+         * Strip command prefix
+         */
+        if (strcmp (argv[0], &quot;e&quot;) != 0) {
+                return 0;
+        }
+        argv++;
+        argc--;
+        if (strcmp (argv[0], &quot;sw&quot;) == 0) {
+                if (argc &gt; 1) {
+                        if (strcmp (argv[1], &quot;on&quot;) == 0) {
+                                sw = ON;
+                        } else if (strcmp (argv[1], &quot;off&quot;) == 0) {
+                                sw = OFF;
+                        } else {
+                                printf (&quot;sw can be 'on' or 'off' only\n&quot;);
+                                return 0;
+                        }
+                }
+                switch(sw) {
+                case ON:
+                        ireg_putb(PORTA, ireg_getb(PORTA) | 0x40);
+                        return 1;
+                case OFF:
+                        ireg_putb(PORTA, ireg_getb(PORTA) & ~0x40);
+                        return 1;
+                }
+        }
+}
+
+/*
+ * board_install - install user functions
+ *
+ * Called when the simulator is starting.
+ */
+board_install ()
+{
+        command_install (examp1_cmd);
+        ireg_install (PORTA, examp1_porta_getb, examp1_porta_putb);
+}
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Add the new target examp1 to the Makefile in the <CODE>src/boards/</CODE>
+directory and compile.</P>
+
+
+
+<H3>Interrupt IO</H3>
+
+
+<P>NB! The simulator has currently no way to install user defined functions
+for interrupt lines similar to that for internal registers.</P>
+
+<H3>Target CPU (68xx) code</H3>
+
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+char sw_curr; /* Current value of switch SW */
+char sw_last; /* Last value of switch SW */
+
+/*
+ * IRQ Interrupt handler
+ *
+ * Add required code to install the routine _irq() as an interrupt
+ * handler here. Some compilers use #pragma interrupt@IRQADDRESS
+ */
+_irq ()
+{
+        sw_curr = _porta & 0x40; /* read PA6 - switch */
+}
+
+main ()
+{
+        while (1) {
+                if (sw_curr != sw_last) {
+                        _porta ~= 0x80;  /* write PA7 - LED */
+                }
+                sw_last = sw_curr;
+        }
+}
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H3>Simulator code</H3>
+
+
+<P>NB. This subchapter is incomplete!
+Missing: How to change the value of the IRQ line. The simulator
+currently has no defined way to do this.</P>
+<P>In addition to Polled IO, add the following.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+irq_int ()
+{
+}
+
+instr_exec ()
+{
+        :
+        if (irq_int ()) {
+                /* IRQ interrupt occured */
+        }
+        :
+}
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+
+
+
+
+
+<HR>
+<A HREF="usrguide-3.html">Previous</A>
+<A HREF="usrguide-5.html">Next</A>
+<A HREF="usrguide.html#toc4">Table of Contents</A>
+</BODY>
+</HTML>

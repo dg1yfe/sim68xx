@@ -1,0 +1,198 @@
+
+
+
+sim68xx(1)					       sim68xx(1)
+
+
+NAME
+       sim6301, sim6805, sim6811 - simulators for 6800 based CPUs
+
+
+SYNOPSIS
+       sim6301 file
+
+       sim6805 file
+
+       sim6811 file
+
+
+DESCRIPTION
+       Each of these simulators simulate CPU, memory and on  chip
+       IO  for its architecture. A monitor that resembles a typi­
+       cal ROM boot monitor is available to control execution  of
+       the CPU, and to examine states of CPU, memory and IO.
+
+
+       All  simulators	have  64K  memory available for user pro­
+       grams. A more detailed description of each simulator  fol­
+       lows.
+
+	  sim6301
+	      Simulator	 for  6800,  6801  and	6301.	The  6301
+	      instruction set is a superset of the 6801, and  the
+	      6801 instruction set is a superset of the 6800. The
+	      simulator is  modeled  after  the	 6801/6301V/6303R
+	      chips,  with  interrupt driven SCI and timer output
+	      compare.
+
+
+	  sim6805
+	      Simulator for 68hc05c series. Interrupt driven SCI,
+	      SPI  and	timer is simulated. The simulation of SCI
+	      and SPI is borrowed from sim6811.
+
+
+	  sim6811
+	      Simulator for 68hc11 series, which is a superset of
+	      6801,  and  different  from  6301. Interrupt driven
+	      SCI, SPI and timer output compare 1 is supported.
+
+
+       When the simulator is started, it will try to  load  files
+       in the following order.
+
+	  Program file
+	      This  file must be on S19 format and given as argu­
+	      ment when the simulator is started.
+
+
+	  Symbol file
+	      The symbol file contains value to string conversion
+
+
+
+								1
+
+
+
+
+
+sim68xx(1)					       sim68xx(1)
+
+
+	      information,  and	 one  of  the  following files is
+	      loaded, if it exists.  The file must have extension
+	      .map or .sym.
+
+	      If  the  extension  is .map, it is expected to have
+	      Baldwin aslink format, i.e.  an ascii file contain­
+	      ing  lines  of  a	 hexadecimal  value followed by a
+	      string.
+
+	      If the extension is .sym, it  is	assumed	 to  have
+	      Motorola	freeware  asm format, i.e.  an ascii file
+	      containing lines of a string followed by a hexadec­
+	      imal value.
+
+
+	  Command file
+	      If  a  file  with extension .sim exists, it will be
+	      used as a command file. If no such file exists, the
+	      simulator	 will  try  to	open  the file .simrc (or
+	      sim.rc under MSDOS). The simulator  will	read  and
+	      execute  commands from a command file, if found, as
+	      they had been present on standard input, until  the
+	      end of the command file is reached.
+
+
+       A  simulator  is	 most useful when target is not available
+       for some reason, or there is limited or	cumbersome  debug
+       support on target.
+
+
+USAGE
+       The following is a summary of user commands supported. For
+       more details, refer to the help text in the simulator.
+
+
+
+       ·      Set/clear program breakpoints in the  program  code
+	      and on execution error
+
+       ·      Modification  and	 display of memory and CPU regis­
+	      ters
+
+       ·      Run, step over subroutines and trace (single  step)
+	      instructions.  A running program can be aborted any
+	      time by interrupt from the user.
+
+       ·      Simple support for global symbols
+
+
+EXAMPLES
+FILES
+	  file.s19
+	      Program file
+
+
+
+
+								2
+
+
+
+
+
+sim68xx(1)					       sim68xx(1)
+
+
+	  file.map or file.sym
+	      Symbol file
+
+	  file.sim or .simrc or sim.rc
+	      Command file
+
+
+
+AUTHOR
+       Arne Riiber <riiber@sn.no>
+
+
+HISTORY
+       The first simulator was written by the author for 6301  in
+       single  chip  mode  early in 1993, with to little space to
+       have debug support in the  ROM.	Wrote  this  using  Turbo
+       C/DOS  and  later ported it to gcc/Linux. Did some perfor­
+       mance tests that favoured gcc/Linux with a factor  of  10.
+       Added  support  for  6805 and later for 6811 in 1994.  New
+       directory structure to ease maintenance,	 and  added  test
+       suite  for  the	6800  core,  in 1995. Compiled with Turbo
+       C/DOS, gcc/Linux and cc/gcc/Solaris.  Optimized	code  for
+       inlining early 1996 which doubled the speed.
+
+
+SEE ALSO
+       aslink(1), asm68xx(1)
+
+
+BUGS
+       ·      There  are  no  known  bugs  in  the  execution  of
+	      opcodes.
+
+       ·      There is only support for one IO area.
+
+       ·      There is only support for global symbols.
+
+       ·      There is no support for different types  of  memory
+	      other than 64K RAM.
+
+       ·      There  is	 no  easy-to-use window based user inter­
+	      face.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+								3
+
+
