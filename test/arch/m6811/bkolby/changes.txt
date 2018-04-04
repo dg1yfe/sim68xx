@@ -1,0 +1,6 @@
+2003-10-11 Fixes for disassembling
+	- Corrected disasm INY/DEY (was "-")
+	- Corrected disasm and cycles of LDY/STY
+	- Adjusted display of CPD 0,X and CPD ffff
+
+	

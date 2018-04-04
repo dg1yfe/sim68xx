@@ -1,0 +1,27 @@
+ASxxxx Linker V02.01 MSOE,  page 1.
+Hexidecimal
+
+Area       Addr   Size   Decimal Bytes (Attributes)
+----       ----   ----   ------- ----- ------------
+.  .ABS.   0000   0000 =      0. bytes (ABS,OVR)
+
+      Value  Global      Value  Global      Value  Global      Value  Global
+      -----  ------      -----  ------      -----  ------      -----  ------
+       0000  s__CODE  |   0000  .__.ABS. |   001F  l__CODE 
+ASxxxx Linker V02.01 MSOE,  page 2.
+Hexidecimal
+
+Area       Addr   Size   Decimal Bytes (Attributes)
+----       ----   ----   ------- ----- ------------
+_CODE      0000   001F =     31. bytes (REL,CON)
+
+      Value  Global      Value  Global      Value  Global      Value  Global
+      -----  ------      -----  ------      -----  ------      -----  ------
+ASxxxx Linker V02.01 MSOE,  page 3.
+
+Files Linked                              [ module(s) ]
+
+testy                                     [  ]
+
+
+

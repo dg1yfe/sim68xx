@@ -1,0 +1,15 @@
+PC=0000 A:B=0000 X=0000 Y=0000 SP=0000 CCR=d0(SXhInzvc)	[0]
+0000	18 ff 4b e0    sty   4be0
+
+>0000	18 ff 4b e0    sty   4be0
+0004	1a ee 0a       ldy   0a,x	Sxxxx
+0007	18 ff 4e 22    sty   4e22
+000b	18 3c          pshy
+000d	37             pshb
+000e	36             psha
+000f	18 08          iny
+0011	18 09          dey
+0013	00             test
+0014	00             test
+
+>

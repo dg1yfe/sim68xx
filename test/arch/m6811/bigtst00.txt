@@ -1,0 +1,4 @@
+bigtst00 is the same as for 6800, except for changes in CCR code.
+It is not fully adapted to 6811 yet and does not run.
+
+1996-04-12/A.Riiber

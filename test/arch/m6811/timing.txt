@@ -1,0 +1,8 @@
+Target: 4587696 cycles @2Mhz is 2.3 seconds
+Simulator v0.9.4 on 486DX33/linux1.1/gcc-2.5.8: 15 seconds
+Simulator v0.9.4 on P133/win95/gcc-2.9.5:       60 seconds, 4 seconds*
+Simulator v0.9.4 on P133/linux2/gcc-2.7.1:      4 seconds
+
+* = removed in command.c: if (kbhit) test needed by Turbo C, not by gcc
+
+

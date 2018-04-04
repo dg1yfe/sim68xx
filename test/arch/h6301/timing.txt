@@ -1,0 +1,19 @@
+Execution times, sim6301, timing.s19 (executes in 1s on target 6301)
+
+Date       Time  CPU       OS          Compiler
+
+1989        1.0s 6301@2Mhz (none)      (assembler)
+1994      >20min 386SX16   DOS         tcc IDE, opt. for speed
+1994       28.0s 486DX33   DOS         tcc IDE, opt. for speed
+1994        2.9s 486DX33   Linux 1.0   gcc [-finline-functions]
+1994        2.4s 486DX33   Linux 1.0   gcc -O2
+1994        2.1s 486DX33   Linux 1.0   gcc -O2
+1994        3.4s SPARC20?  SunOS 4     gcc
+1994        1.6s SPARC20?  SunOS 4     gcc -O2 -finline-functions
+1996-10-09  2.8s 486DX25   Linux 1.0   gcc -O2 -finline-functions
+1996-10-09  0.5s P90       SCO SYSVR3  cc  -O
+1996-10-09  1.2s SPARC20?  SunOS 4     gcc -O2 -finline-functions
+1996-10-09  1.7s SPARC20?  SunOS 4     cc  -O2
+1999-08-14  1.0s P133      Win95       gcc -O2 -finline-functions
+1999-08-20  1.0s P133      Linux 2.0   gcc -O2 -finline-functions
+      

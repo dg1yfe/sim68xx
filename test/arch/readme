@@ -1,0 +1,5 @@
+Most monitors expect CR and not LF when the Enter key is pressed.
+To stop unix systems from mapping CR to LF, use the command
+	stty -icrnl
+(press Ctrl-J to get linefeed).
+It works under native shells (Bourne) but not with tcsh.

@@ -1,0 +1,10 @@
+assist05.asm	Monitor modified for 6805c8
+bittest.asm	Test program for 6805 specific bit instructions
+monc8.asm	Another monitor for 6805c8
+sciex.asm	Converts each character from SCI to hex and sends it to SCI.
+timerex.asm	Toggles PC6 each 10th second.
+		On 386SX16, each 240th second (each 4th minute).
+timing.asm	Generates character to SCI with 1s inter character delay.
+		With sim6805 ver.0.9.1, 386SX16 @2BogoMips used ca. 30s,
+		486DX33 @16BogoMips estimated to 6s.
+

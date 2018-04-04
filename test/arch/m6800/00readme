@@ -1,0 +1,3 @@
+To test an 6800 simulator, set breakpoint at f024 hex, start the
+simulator at 1000 hex. If the simulator detects breakpoint at f024,
+it has passed the 6800 cpu core tests.

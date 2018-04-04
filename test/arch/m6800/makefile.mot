@@ -1,0 +1,12 @@
+# Makefile for Motorola portable assembler
+MV	= mv
+AS	= \nc\geirkjos\pasm00
+BUILD	= \nc\geirkjos\ubuilds
+
+bigtst00.s19: bigtst00.o
+	$(BUILD) $<
+	$(MV) bigtst00.mx bigtst00.s19
+
+bigtst00.o: bigtst00.asm
+	$(AS) -l bigtst00.lst $<
+

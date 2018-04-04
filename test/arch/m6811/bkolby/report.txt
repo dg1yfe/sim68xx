@@ -1,0 +1,78 @@
+Bug rapport:
+
+
+Bugs with dissasembly output in SimnCcpu:
+
+		g_target equ #4be0
+		g_len	 equ #4e22
+
+Source text:
+	
+	sty	g_target			; set global target pointer
+   	ldy	10,x				; byts	->Y
+   	sty	g_len				; set global buf len
+   	
+	pshy
+   	pshb
+   	psha
+
+
+Dissassembly in SimnCcpu: ( command: <u bef2> )
+
+
+	bef2    18 ff          sty   00ff
+	bef4    4b             -
+	bef5    e0 1a          subb  1a,x       ZD5
+	bef7    ee 0a          ldx   0a,x       _.d2
+	bef9    18 ff          sty   00ff
+
+	>
+	befb    4e             -
+	befc    22 18          bhi   18 ZD4
+	befe    3c             pshx
+	beff    37             pshb
+	bf00    36             psha
+
+Should have been:
+
+	bef2    18 ff 4b 0e    sty   4b0e	g_target
+	bef6 	1a ee 0a       ldy   0a,x 	_.d2
+	bef9    18 ff 4e 22    sty   4e22	g_len
+
+	>
+	befd	18 3c          pshy
+	beff    37             pshb
+	bf00    36             psha
+
+	; Comment: for some of the Extended addressing mode instructions the 				disassembly output skips the line after the opcode bytes and
+		regards the operands as start of a new instruction.
+
+
+
+SimnCcpu disassembly of other Extended addr mode instructions:
+
+  Only 3 more of this category instructions seems to exist for M6811:
+	
+  Result of source text "ldy	g_len":
+
+	bf0e    18 fe          ldy   00fe
+	bf10    4e             -
+	bf11    22 cc          bhi   cc
+
+	; Comment: Same result as with STY
+
+
+	
+  Result of source text "cpd	g_len":
+
+	bf0e    1a b3 4e 22    cpd 4e22 g_len
+
+	; Comment: Text correct but missing <tab> betw. opcode mnemonic - 			operand, and betw. operand - label (another hint about the bug?)
+
+
+  Result of source text "cpy	g_len":
+
+	bf0e    18 bc 4e 22    cpy   4e22       g_len
+
+	; Comment: Text correct, spacing correct.
+
