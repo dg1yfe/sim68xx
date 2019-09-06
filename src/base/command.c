@@ -227,8 +227,6 @@ int command (u_char *buf)
 	static u_int	addr;
 	static int	break_on_err;
 	static int	trace_function_calls = 0;
-	static int	last_cmd;
-	int		new_cmd;
 	unsigned int i;
 	char	tty[MAXBUFSIZE];
 	int		n_instr;
@@ -244,10 +242,10 @@ int command (u_char *buf)
 	argc = MAXARGS;
 	split (argv, (char *) buf, &argc);
 
-	/* Get new or use last command */
-	new_cmd = (argc > 0) ? *argv[0] : last_cmd;
+	if (argc == 0)
+		return 1;
 
-	switch (new_cmd)
+	switch (*argv[0])
 	{
 
 	case 'b':
@@ -611,7 +609,6 @@ int command (u_char *buf)
 		cpu_print ();
 		break;
 	} /* switch */
-	last_cmd = new_cmd;
 	return 1;
 }
 
@@ -621,7 +618,8 @@ int command (u_char *buf)
  */
 int commandloop (FILE *ifp)
 {
-	char buf[MAXBUFSIZE];
+	char buf[MAXBUFSIZE] = { 0 };
+	char buf2[MAXBUFSIZE] = { 0 };
 
 	commandinit ();
 
@@ -631,6 +629,14 @@ int commandloop (FILE *ifp)
 
 		if (fgets (buf, MAXBUFSIZE, ifp) == NULL)
 			return ferror (ifp);
+			
+		if (strlen(buf) < 2) {
+			memcpy(buf, buf2, MAXBUFSIZE);
+		} else {
+			memcpy(buf2, buf, MAXBUFSIZE);
+		}
+		
+			
 	} while (command ((u_char *) buf));
 
 	return 0;
