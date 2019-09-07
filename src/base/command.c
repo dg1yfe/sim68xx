@@ -188,7 +188,8 @@ static char *helptext[] = {
 	"	B E|e                   - break on error/no break on error",
 	"Memory commands",
 	"	md [addr [count]]       - memory display",
-	"	mm  addr [hh hh..]      - memory modify",
+	"	mf addr addr hh         - memory fill",
+	"	mm addr [hh hh..]       - memory modify",
 	"	u  [addr [count]]       - unassemble",
 	"Run commands",
 	"	g [addr]                - go",
@@ -466,6 +467,14 @@ int command (u_char *buf)
 					for (j = 0; j < strlen ((char *)buf); j++)
 						mem_putb (dump_addr++, buf[j]);
 				}
+			}
+		}
+		else if (strcmp (argv[0], "mf") == 0) /* Memory fill */
+		{
+			if (argc == 4) {
+				int j;
+				for (j = strtol(argv[1], NULL, 16); j <= strtol(argv[2], NULL, 16); j++)
+					mem_putb(j, strtol(argv[3], NULL, 16));
 			}
 		}
 		else if (strcmp (argv[0], "md") == 0) /* Memory display */
