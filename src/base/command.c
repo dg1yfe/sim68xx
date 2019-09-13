@@ -192,6 +192,7 @@ static char *helptext[] = {
 	"	mm addr [hh hh..]       - memory modify",
 	"	u  [addr [count]]       - unassemble",
 	"Run commands",
+	"	e                       - return from subroutine - execute until next rti/rts",
 	"	g [addr]                - go",
 	"	s                       - step over subroutines",
 	"	t                       - trace one instruction",
@@ -615,6 +616,7 @@ int command (u_char *buf)
 		/* External command handler installed? */
 		if (ext_cmd && (*ext_cmd) (argc, argv))
 			break;
+		printf("Unknown command\n");
 		cpu_print ();
 		break;
 	} /* switch */
@@ -638,6 +640,9 @@ int commandloop (FILE *ifp)
 
 		if (fgets (buf, MAXBUFSIZE, ifp) == NULL)
 			return ferror (ifp);
+
+		if (strstr(buf, "\x03"))
+			continue;
 			
 		if (strlen(buf) < 2) {
 			memcpy(buf, buf2, MAXBUFSIZE);
