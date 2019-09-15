@@ -641,8 +641,11 @@ int commandloop (FILE *ifp)
 		if (fgets (buf, MAXBUFSIZE, ifp) == NULL)
 			return ferror (ifp);
 
-		if (strstr(buf, "\x03"))
+		if (strstr(buf, "\x03")) {
+			printf("cancel\n");
+			buf[0] = 0;
 			continue;
+		}
 			
 		if (strlen(buf) < 2) {
 			memcpy(buf, buf2, MAXBUFSIZE);
