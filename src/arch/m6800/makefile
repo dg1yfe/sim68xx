@@ -3,7 +3,7 @@ include ../../default.mk
 ROOT	= ../../..
 INCROOT	= $(ROOT)/inc
 INCLUDES= -I$(INCROOT)/arch/m6800 -I$(INCROOT)/arch/m68xx -I$(INCROOT)/base
-DEFINES	= -DUSE_PROTOTYPES -DM6800
+DEFINES	= -DUSE_PROTOTYPES -DHAS_SCI -DM6800
 CPPFLAGS= $(DEFINES) $(INCLUDES)
 
 # Directories to parent source files
@@ -28,7 +28,8 @@ OFILES_M68XX=\
 OFILES_M6800=\
 	instr.o\
 	ireg.o\
-	optab.o
+	optab.o\
+	sci.o
 
 OFILES	= $(OFILES_BASE) $(OFILES_M68XX) $(OFILES_M6800)
 

@@ -65,11 +65,9 @@ sci_in (buf, nbytes)
 {
 	int i;
 
-	for (i=0; i<nbytes; i++)
-		if (sci_rx_ints < BUFSIZE)
-			sci_recvbuf[sci_rx_ints++] = buf[i];
-		else
-			warning ("sci_in: buffer full\n");
+	for (i=0; i < nbytes && sci_rx_index + sci_rx_ints < BUFSIZE; i++)
+		sci_recvbuf[sci_rx_index + sci_rx_ints++] = buf[i];
+	return i;
 }
 
 sci_print ()
@@ -87,17 +85,6 @@ sci_print ()
 scsr_getb (offs)
 	u_int offs;
 {
-	char c;
-#if 0
-	/*
-	 * Check if user has typed a key, prevent simulator overrun
-	 *
-	 * SCDR could be read regardless of RDRF,
-	 * we assume SCSR is always checked first
-	 */
-	if (!sci_rx_ints && (c = tty_getkey (0))) /* Typed a key */
-		sci_in (&c, 1);
-#endif
 	int result;
 	result = (TDRE | TC) | ((sci_rx_ints) ? RDRF : 0) | IDLE;
 	/*printf ("scsr_getb: sci_rx_ints=%d result=%02x\n", sci_rx_ints, result);*/
@@ -114,7 +101,6 @@ scsr_getb (offs)
 scdr_getb (offs)
 	u_int offs;
 {
-	static int recvindex = 0;
 	int c;
 
 	if (cpu_isrunning ()) {
@@ -123,7 +109,7 @@ scdr_getb (offs)
 		 * into RDR
 		 */
 		if (sci_rx_ints) {
-			ireg_putb (SCDR, sci_recvbuf[recvindex++]);
+			ireg_putb (SCDR, sci_recvbuf[sci_rx_index++]);
 			sci_rx_ints--;
 		}
 
@@ -132,7 +118,7 @@ scdr_getb (offs)
 		 * make recvbuf[] ready for more user sci data input
 		 */
 		if (sci_rx_ints == 0)
-			recvindex = 0;
+			sci_rx_index = 0;
 	}
 	return ireg_getb (SCDR);
 }

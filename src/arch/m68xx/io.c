@@ -45,7 +45,7 @@ int out_in (u_char *buf, int nbytes)
 	else if (strncmp ((char *) buf, "\\ascii", strlen ("\\ascii")) == 0)
 		io_mode = BACKSLASH_ASCII;
 
-	return 0;
+	return nbytes;
 }
 
 /*
@@ -124,15 +124,30 @@ static int help ()
  */
 void io_poll ()
 {
-	int  c;
+	/*
+	 * Character will be buffered in static variable c until accepted
+         * by the device -- it's a bit crude but needed to solve a problem
+	 */
+	static int c = -1;
 	char ch;
 
 	if (curr_dev->name)
 	{
-		if ((c = tty_getkey (0)) != -1) /* -1 or 0..255 */
+		if (c != -1 || (c = tty_getkey (0)) != -1) /* -1 or 0..255 */
 		{
 			ch = c & 0xff;
-			(*curr_dev->input) (&ch, 1);
+#ifdef M6800 // hack for Altair 680 BASIC, should be made a command
+			switch (ch) {
+			case '\n':
+				ch = '\r';
+				break;
+			case 0x7f:
+				ch = '\b';
+				break;
+			}
+#endif
+			if ((*curr_dev->input) (&ch, 1))
+				c = -1;
 		}
 	}
 }
@@ -157,6 +172,22 @@ void io_putb (u_char value)
 		break;
 	case ASCII:
 	default:
+#ifdef M6800 // hack for Altair 680 BASIC, should be made a command
+		switch (value) {
+		case '\n':
+			return;
+		case '\r':
+			value = '\n';
+			break;
+		default:
+			// BASIC seems to output high bit on the last character
+			// of line or some messages, I think because MS had
+			// refactored code to use a zero terminator and failed
+			// to notice that the high bits were still being output
+			value &= 0x7f;
+			break;
+		}
+#endif
 		putchar (value);
 	}
 	fflush (stdout);

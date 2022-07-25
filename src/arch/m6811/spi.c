@@ -36,14 +36,12 @@ spi_in (buf, nbytes)
 	printf ("spi_in: spi_rx_nbytes=%d nbytes=%d\n", spi_rx_nbytes, nbytes);
 #endif
 
-	for (i = 0; i < nbytes; i++)
-		if (spi_rx_nbytes < BUFSIZE)
-			spi_rx_buf[spi_rx_nbytes++] = buf[i];
-		else
-			warning ("spi_in: buffer full\n");
+	for (i = 0; i < nbytes && spi_rx_nbytes < BUFSIZE; i++)
+		spi_rx_buf[spi_rx_nbytes++] = buf[i];
 #ifdef DEBUG
 	spi_print ();
 #endif
+	return i;
 }
 
 spi_print ()

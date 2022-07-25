@@ -74,7 +74,8 @@ M6800_OBJS=\
 	$(M6800)/opfunc.o\
 	$(M6800)/optab.o\
 	$(M6800)/instr.o\
-	$(M6800)/ireg.o
+	$(M6800)/ireg.o\
+	$(M6800)/sci.o
 
 M6805= ../arch/m6805
 M6805_OBJS=\
