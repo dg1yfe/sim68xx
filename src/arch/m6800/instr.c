@@ -12,8 +12,6 @@
 #include "memory.h"
 #include "optab.h"
 #include "reg.h"
-#include "sci.h"
-#include "timer.h"
 #include "symtab.h"
 
 #ifdef USE_PROTOTYPES
@@ -86,7 +84,6 @@ instr_exec ()
 	}
 
 	cpu_setncycles (cpu_getncycles () + opptr->op_n_cycles);
-	timer_inc (opptr->op_n_cycles);
 	return 0;
 }
 

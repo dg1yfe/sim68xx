@@ -1,39 +1,58 @@
+include ../../default.mk
+
 ROOT	= ../../..
 INCROOT	= $(ROOT)/inc
-INCDIR	= $(INCROOT)/arch
-INCLUDES= -I$(INCDIR)/m6800 -I$(INCDIR)/m68xx -I$(INCDIR) -I$(INCROOT)
-DEFINES	= -DUSE_PROTOTYPES
-CFLAGS	= -g #-Wmissing-prototypes
-CPPFLAGS= -DM6800 $(INCLUDES) $(DEFINES)
-RM	= rm -f
+INCLUDES= -I$(INCROOT)/arch/m6800 -I$(INCROOT)/arch/m68xx -I$(INCROOT)/base
+DEFINES	= -DUSE_PROTOTYPES -DM6800
+CPPFLAGS= $(DEFINES) $(INCLUDES)
+
+# Directories to parent source files
+BASE	= ../../base
+M68XX	= ../m68xx
+
+# Non-chip specific object files
+OFILES_BASE=\
+	callstac.o\
+	command.o\
+	cpu.o\
+	fileio.o
 
 # Chip specific object files
-OFILES=\
+OFILES_M68XX=\
+	alu.o\
 	memory.o\
-	iregtab.o\
+	io.o\
 	reg.o\
-	opfunc.o\
-	optab.o\
-	instr.o
+	opfunc.o
+
+OFILES_M6800=\
+	instr.o\
+	ireg.o\
+	optab.o
+
+OFILES	= $(OFILES_BASE) $(OFILES_M68XX) $(OFILES_M6800)
+
+CFILES_BASE	= $(OFILES_BASE:%.o=$(BASE)/%.c)
+CFILES_M68XX	= $(OFILES_M68XX:%.o=$(M68XX)/%.c)
+CFILES_M6800	= $(OFILES_M6800:%.o=%.c)
+CFILES		= $(CFILES_BASE) $(CFILES_M68XX) $(CFILES_M6800)
 
 
-default: $(OFILES)
-all:     default
+default: all
+all:     $(OFILES)
 clean:
 	-$(RM) *.o
+realclean: clean
+	-$(RM) .depend *~
+# This line confuses Sun make
+depend .depend:
+	$(COMPILE.c) -MM $(CFILES) > .depend
+include .depend
 
-memory.o: ../m68xx/memory.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c ../m68xx/memory.c
-reg.o: ../m68xx/reg.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c ../m68xx/reg.c
-
-
-# Preliminary use 6301 opcode table for 6800
-optab.o: ../h6301/optab.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c ../h6301/optab.c
-instr.o: ../h6301/instr.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c ../h6301/instr.c
-
-#.c.o:
-#	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+$(OFILES_BASE): %.o: $(BASE)/%.c
+	$(COMPILE.c) $< $(OUTPUT_OPTION)
+$(OFILES_M68XX): %.o: $(M68XX)/%.c
+	$(COMPILE.c) $< $(OUTPUT_OPTION)
+$(OFILES_M6800): %.o: %.c
+	$(COMPILE.c) $< $(OUTPUT_OPTION)
 

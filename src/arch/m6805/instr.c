@@ -179,7 +179,7 @@ instr_exec ()
 /*
  * instr_print - print an instruction
  */
-instr_print (addr)
+u_int instr_print (addr)
 	u_int addr;
 {
 	u_short		pc	= addr;

@@ -4,7 +4,7 @@ ROOT	= ../../..
 INCROOT	= $(ROOT)/inc
 INCLUDES= -I$(INCROOT)/arch/h6301 -I$(INCROOT)/arch/m68xx -I$(INCROOT)/base
 DEFINES	= -DUSE_PROTOTYPES -DHAS_SCI -DH6301
-CPPFLAGS= $(DEFINES) $(INCLUDES) 
+CPPFLAGS= $(DEFINES) $(INCLUDES)
 
 # Directories to parent source files
 BASE	= ../../base

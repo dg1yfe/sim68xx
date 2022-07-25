@@ -5,7 +5,7 @@ INCROOT	= $(ROOT)/inc
 # m6811 include dir is for sci.h and spi.h
 INCLUDES= -I$(INCROOT)/arch/m6805 -I$(INCROOT)/arch/m6811 -I$(INCROOT)/arch/m68xx -I$(INCROOT)/base
 DEFINES	= -DM6805 -DUSE_PROTOTYPES -DHAS_SCI -DHAS_SPI
-CPPFLAGS=  $(DEFINES) $(INCLUDES) 
+CPPFLAGS=  $(DEFINES) $(INCLUDES)
 
 # Directories to parent source files
 BASE	= ../../base

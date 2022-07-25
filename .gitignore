@@ -1,0 +1,9 @@
+.depend
+*.o
+/src/boards/sim6301
+/src/boards/sim6303
+/src/boards/sim6800
+/src/boards/sim6805
+/src/boards/sim6811
+/src/boards/simnccpu
+/src/boards/simncpan
