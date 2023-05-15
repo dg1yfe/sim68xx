@@ -33,12 +33,9 @@ int sci_in (u_char *s, int nbytes)
 {
 	int i;
 
-	for (i=0; i<nbytes; i++)
-		if (rxinterrupts < BUFSIZE)
-			recvbuf[rxinterrupts++] = s[i];
-		else
-			warning ("sci_in:: buffer full\n");
-	return 0;
+	for (i=0; i < nbytes && rxindex + rxinterrupts < BUFSIZE; i++)
+		recvbuf[rxindex + rxinterrupts++] = s[i];
+	return i;
 }
 
 int sci_print ()
@@ -54,15 +51,6 @@ int sci_print ()
  */
 int trcsr_getb (u_int offs)
 {
-#if 0
-	char c;
-	/*
-	 * Check if user has typed a key, prevent simulator overrun
-	 * if data in recvbuf, return RDRF
-	 */
-	if (!rxinterrupts && (c = tty_getkey (0))) /* Typed a key */
-		sci_in (&c, 1);
-#endif
 	if (rxinterrupts)
 		return ireg_getb (TRCSR) | TDRE | RDRF;
 	else

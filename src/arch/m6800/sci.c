@@ -9,7 +9,9 @@
 #include "cpu.h"
 #include "ireg.h"
 #include "sci.h"
-
+#include "error.h"
+#include "fprinthe.h"
+#include "io.h"
 
 /*
  * Pseudo-received data buffer used by rdr_getb() routines
@@ -27,9 +29,7 @@ static int	rxindex      = 0;	/* Index of first byte in recvbuf */
  *
  * increment number of outstanding rx interrupts
  */
-sci_in (s, nbytes)
-	u_char *s;
-	int nbytes;
+int sci_in (u_char *s, int nbytes)
 {
 	int i;
 
@@ -38,48 +38,51 @@ sci_in (s, nbytes)
 	return i;
 }
 
-sci_print ()
+int sci_print ()
 {
 	printf ("sci recvbuf:\n");
 	fprinthex (stdout, recvbuf + rxindex, rxinterrupts);
+	return 0;
 }
 
 
 /*
- * trcsr_getb - always return Transmit Data Reg. Empty = 1
+ * sr_getb - always return Transmit Data Reg. Empty = 1
  */
-trcsr_getb (offs)
-	u_int offs;
+int sr_getb (u_int offs)
 {
+	u_char sr;
+
+	sr = TDRE;
 	if (rxinterrupts)
-		return ireg_getb (TRCSR) | TDRE | RDRF;
-	else
-		return (ireg_getb (TRCSR) | TDRE) & ~RDRF;
+		sr |= RDRF;
+	if (!serial_int())
+		sr |= IRQ; // negated
+	return sr;
 }
 
 /*
- *  trcsr_putb - enable/disable tx/rx interrupt
+ *  cr_putb - enable/disable tx/rx interrupt
  *
  *  Sets global interrupt flag if tx interrupt is enabled
  *  so main loop can execute interrupt vector
  */
-trcsr_putb (offs, value)
+int cr_putb (offs, value)
 	u_int  offs;
 	u_char value;
 {
-	u_char trcsr;
-
-	ireg_putb (TRCSR, value);
-	trcsr = trcsr_getb (TRCSR);
+	ireg_putb (CR, value);
 
 	/*
-	 * trcsr & TDRE is always non-zero, thus we can
+	 * sr & TDRE is always non-zero, thus we can
 	 * start generating tx int. request immediately
 	 */
-	if (trcsr & TIE)
+	if ((value & (TC1 | TC2)) == TC1)
 		txinterrupts = 1;
 	else
 		txinterrupts = 0;
+
+	return 0;
 }
 
 /*
@@ -89,7 +92,7 @@ trcsr_putb (offs, value)
  * decrement number of outstanding rx interrupts
  * Assume RIE is enabled.
  */
-rdr_getb (offs)
+int rdr_getb (offs)
 	u_int  offs;
 {
 	if (cpu_isrunning ()) {
@@ -117,20 +120,19 @@ rdr_getb (offs)
  * Sets global interrupt flag if Tx interrupt is enabled
  * to signalize main loop to execute sci interrupt vector
  */
-tdr_putb (offs, value)
-	u_int  offs;
-	u_char value;
+int tdr_putb (u_int  offs, u_char value)
 {
-	u_char trcsr;
+	u_char cr;
 
-	ireg_putb (TDR, value);
 	io_putb (value);
 	/*
 	 * trcsr & TDRE is always non-zero, thus we can
 	 * start generating tx int. request immediately
 	 */
-	trcsr = trcsr_getb (TRCSR);
-	if (trcsr & TIE)
+	cr = ireg_getb (CR);
+	if ((cr & (TC1 | TC2)) == TC1)
 		txinterrupts = 1;
+
+	return 0;
 }
 

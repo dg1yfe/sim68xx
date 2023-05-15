@@ -21,7 +21,11 @@ void cpu_reset ()
 	/*
 	 * The following suits many CPU's but could also test CPU type
 	 */
+#ifdef M6800
+	cpu_setstackmax (cpu_getstackmax () ? cpu_getstackmax () : 0xFFFF);
+#else
 	cpu_setstackmax (cpu_getstackmax () ? cpu_getstackmax () : 0x00FF);
+#endif
 }
 
 void cpu_print ()

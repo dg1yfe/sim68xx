@@ -29,6 +29,7 @@ extern u_int alu_shlword _P((u_int operand, u_char lsbit));
 extern u_int alu_shrword _P((u_int operand, u_char msbit));
 extern u_int alu_subbyte _P((u_char val1, u_char val2, u_char carry));
 extern u_long alu_subword _P((u_int val1, u_int val2, u_char carry));
+extern u_long alu_cmpword _P((u_int val1, u_int val2, u_char carry));
 extern int alu_testbyte _P((u_char operand));
 /* End of headers for ../../src/arch/m68xx/alu.c */
 

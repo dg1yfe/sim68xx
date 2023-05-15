@@ -287,6 +287,22 @@ u_long alu_subword (u_int val1, u_int val2, u_char carry)
 }
 
 /*
+ * cmpword - subtract val2 and carry from val1, set flags except cf
+ */
+u_long alu_cmpword (u_int val1, u_int val2, u_char carry)
+//	u_char carry;		/* 0 or 1 */
+{
+	u_long result = (long) val1 - val2 - carry;
+	u_int  cflag  = (result >> 1) & 0x8000;
+
+	reg_setnflag (result & 0x8000);
+	reg_setvflag (((val1 ^ val2 ^ result) ^ cflag) & 0x8000);
+	reg_setzflag ((result & 0xFFFF) == 0);
+	return result;
+}
+
+
+/*
  *  testbyte - called by tst*() to subtract zero and set flags
  *
  */
